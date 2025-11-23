@@ -1,130 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>Healthcare Test Result Prediction</title>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<title>Healthcare Test Result Prediction – v2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
-  body { font-family: "Segoe UI", Roboto, Arial; background:#f4f7fb; color:#222; padding:30px;}
-  .card { max-width:1000px; margin:auto; background:white; padding:20px; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.08);}
-  h1 { margin-top:0; }
-  .grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-  label { font-size:0.9rem; color:#444; }
-  input { width:100%; padding:8px 10px; margin-top:6px; border-radius:6px; border:1px solid #ccc; }
-  .full { grid-column:1/-1; }
-  button { padding:10px 16px; border-radius:6px; border:none; background:#007bff; color:#fff; font-weight:600; cursor:pointer; }
-  button.secondary { background:#6c757d; }
-  .result { padding:12px; border-radius:8px; margin-top:12px; font-weight:700; }
-  .result.normal { background:#e6fff2; color:#046b2f; }
-  .result.abnormal { background:#fff1f0; color:#8b0000; }
-  .result.inconclusive { background:#fff8e6; color:#7a5c00; }
+    body {
+        font-family: "Segoe UI", Roboto, Arial;
+        background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
+        margin: 0;
+        padding: 30px;
+        animation: fadeIn 1s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+        max-width: 900px;
+        margin: auto;
+        background: white;
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        animation: floatIn 0.8s ease-out;
+    }
+
+    @keyframes floatIn {
+        from { opacity: 0; transform: scale(0.97); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+
+    h1 {
+        text-align: center;
+        font-weight: 800;
+        margin-top: 0;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    label {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    input {
+        padding: 10px;
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid #bbb;
+        font-size: 1rem;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 6px rgba(0,123,255,0.5);
+    }
+
+    button {
+        padding: 12px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover { transform: scale(1.03); }
+
+    .primary-btn {
+        background: #007bff;
+        color: white;
+    }
+
+    .secondary-btn {
+        background: #6c757d;
+        color: white;
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    .result-box {
+        margin-top: 20px;
+        padding: 18px;
+        border-radius: 12px;
+        text-align: center;
+        font-size: 22px;
+        font-weight: bold;
+        display: none;
+        animation: popIn 0.4s ease-out;
+    }
+
+    @keyframes popIn {
+        from { transform: scale(0.9); opacity: 0; }
+        to   { transform: scale(1); opacity: 1; }
+    }
+
+    .normal {
+        background: #e8ffef;
+        color: #0b7d36;
+        box-shadow: 0 0 10px #b7ffd3;
+    }
+    .abnormal {
+        background: #ffecec;
+        color: #9b0000;
+        box-shadow: 0 0 10px #ffbcbc;
+    }
+    .inconclusive {
+        background: #fff7dd;
+        color: #8b6b00;
+        box-shadow: 0 0 10px #ffe9a3;
+    }
+
+    .preset-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+
 </style>
 </head>
+
 <body>
-  <div class="card">
+
+<div class="card">
     <h1>Healthcare Test Result Prediction</h1>
 
-    <div class="grid">
-
-      <div><label>Age</label><input id="Age" type="number" value="35"></div>
-      <div><label>Gender</label><input id="Gender" type="number" value="0"></div>
-
-      <div><label>Blood Type (encoded)</label>
-        <input id="Blood Type" type="number" value="1">
-      </div>
-
-      <div><label>Medical Condition (encoded)</label>
-        <input id="Medical Condition" type="number" value="0">
-      </div>
-
-      <div><label>Billing Amount</label>
-        <input id="Billing Amount" type="number" value="12000">
-      </div>
-
-      <div><label>Admission Type</label>
-        <input id="Admission Type" type="number" value="0">
-      </div>
-
-      <div><label>Medication</label>
-        <input id="Medication" type="number" value="0">
-      </div>
-
-      <div><label>Symptom Severity</label>
-        <input id="Symptom_Severity" type="number" value="1">
-      </div>
-
-      <div><label>Prior Hospital Visits</label>
-        <input id="Prior_Hospital_Visits" type="number" value="0">
-      </div>
-
-      <div><label>High BP Flag</label>
-        <input id="High_BP_Flag" type="number" value="0">
-      </div>
-
-      <div><label>High Sugar Flag</label>
-        <input id="High_Sugar_Flag" type="number" value="0">
-      </div>
-
-      <div><label>Fever Flag</label>
-        <input id="Fever_Flag" type="number" value="0">
-      </div>
-
-      <div class="full">
-        <label>Risk Score</label>
-        <input id="Risk_Score" value="11">
-      </div>
-
-      <div class="full">
-        <button onclick="predict()">Predict</button>
-      </div>
-
-      <div id="resultBox" class="full" style="display:none"></div>
-
+    <div class="preset-buttons">
+        <button class="secondary-btn" onclick="preset('normal')">Normal Case</button>
+        <button class="secondary-btn" onclick="preset('abnormal')">Abnormal Case</button>
+        <button class="secondary-btn" onclick="preset('inconclusive')">Inconclusive</button>
     </div>
-  </div>
+
+    <div class="grid">
+        <div><label>Age</label><input id="Age" type="number"></div>
+        <div><label>Gender (0/1)</label><input id="Gender" type="number"></div>
+        <div><label>Blood Type</label><input id="Blood_Type" type="number"></div>
+        <div><label>Medical Condition</label><input id="Medical_Condition" type="number"></div>
+        <div><label>Billing Amount</label><input id="Billing_Amount" type="number"></div>
+        <div><label>Admission Type</label><input id="Admission_Type" type="number"></div>
+        <div><label>Medication</label><input id="Medication" type="number"></div>
+        <div><label>Symptom Severity (0–10)</label><input id="Symptom_Severity" type="number"></div>
+        <div><label>Prior Hospital Visits</label><input id="Prior_Hospital_Visits" type="number"></div>
+        <div><label>High BP Flag</label><input id="High_BP_Flag" type="number"></div>
+        <div><label>High Sugar Flag</label><input id="High_Sugar_Flag" type="number"></div>
+        <div><label>Fever Flag</label><input id="Fever_Flag" type="number"></div>
+        <div class="full"><label>Risk Score</label><input id="Risk_Score" type="number"></div>
+
+        <div class="full">
+            <button class="primary-btn" onclick="predict()">Predict</button>
+        </div>
+    </div>
+
+    <div id="result" class="result-box"></div>
+</div>
 
 <script>
-const API_BASE = "https://ds-project-backend.onrender.com"; 
+const API_BASE = "https://ds-project-backend.onrender.com";
 
+/* ---------------------------
+   PRESETS
+---------------------------- */
+function preset(type) {
+    if (type === "normal") {
+        setValues(25,0,1,1,10000,1,1,1,0,0,0,0,20);
+    } 
+    else if (type === "abnormal") {
+        setValues(70,1,2,3,90000,2,2,9,6,1,1,1,85);
+    } 
+    else {
+        setValues(45,0,1,1,30000,1,1,4,1,0,0,0,40);
+    }
+}
+function setValues(age,g,bp,mc,ba,at,med,ss,phv,hbp,hs,fever,rs){
+    document.getElementById("Age").value = age;
+    document.getElementById("Gender").value = g;
+    document.getElementById("Blood_Type").value = bp;
+    document.getElementById("Medical_Condition").value = mc;
+    document.getElementById("Billing_Amount").value = ba;
+    document.getElementById("Admission_Type").value = at;
+    document.getElementById("Medication").value = med;
+    document.getElementById("Symptom_Severity").value = ss;
+    document.getElementById("Prior_Hospital_Visits").value = phv;
+    document.getElementById("High_BP_Flag").value = hbp;
+    document.getElementById("High_Sugar_Flag").value = hs;
+    document.getElementById("Fever_Flag").value = fever;
+    document.getElementById("Risk_Score").value = rs;
+}
+
+/* ---------------------------
+   PREDICT
+---------------------------- */
 async function predict() {
-  const payload = {
-    "Age": parseFloat(document.getElementById("Age").value),
-    "Gender": parseFloat(document.getElementById("Gender").value),
-    "Blood Type": parseFloat(document.getElementById("Blood Type").value),
-    "Medical Condition": parseFloat(document.getElementById("Medical Condition").value),
-    "Billing Amount": parseFloat(document.getElementById("Billing Amount").value),
-    "Admission Type": parseFloat(document.getElementById("Admission Type").value),
-    "Medication": parseFloat(document.getElementById("Medication").value),
-    "Symptom_Severity": parseFloat(document.getElementById("Symptom_Severity").value),
-    "Prior_Hospital_Visits": parseFloat(document.getElementById("Prior_Hospital_Visits").value),
-    "High_BP_Flag": parseFloat(document.getElementById("High_BP_Flag").value),
-    "High_Sugar_Flag": parseFloat(document.getElementById("High_Sugar_Flag").value),
-    "Fever_Flag": parseFloat(document.getElementById("Fever_Flag").value),
-    "Risk_Score": parseFloat(document.getElementById("Risk_Score").value)
-  };
+    const payload = {
+        Age: +Age.value,
+        Gender: +Gender.value,
+        Blood_Type: +Blood_Type.value,
+        Medical_Condition: +Medical_Condition.value,
+        Billing_Amount: +Billing_Amount.value,
+        Admission_Type: +Admission_Type.value,
+        Medication: +Medication.value,
+        Symptom_Severity: +Symptom_Severity.value,
+        Prior_Hospital_Visits: +Prior_Hospital_Visits.value,
+        High_BP_Flag: +High_BP_Flag.value,
+        High_Sugar_Flag: +High_Sugar_Flag.value,
+        Fever_Flag: +Fever_Flag.value,
+        Risk_Score: +Risk_Score.value
+    };
 
-  const res = await fetch(API_BASE + "/predict", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
+    let resultBox = document.getElementById("result");
+    resultBox.style.display = "block";
+    resultBox.innerHTML = "Processing... ⏳";
 
-  const data = await res.json();
+    try {
+        const res = await fetch(API_BASE + "/predict", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(payload)
+        });
 
-  const box = document.getElementById("resultBox");
-  box.style.display = "block";
-  box.className = "result full";
+        let data = await res.json();
 
-  if (data.prediction_label === "NORMAL") {
-    box.classList.add("normal");
-    box.innerHTML = "Prediction: NORMAL ✔️";
-  } else if (data.prediction_label === "ABNORMAL") {
-    box.classList.add("abnormal");
-    box.innerHTML = "Prediction: ABNORMAL ❗";
-  } else {
-    box.classList.add("inconclusive");
-    box.innerHTML = "Prediction: INCONCLUSIVE ❓";
-  }
+        if (!res.ok) {
+            resultBox.className = "result-box inconclusive";
+            resultBox.innerHTML = "Server Error ❌<br>" + (data.detail || "Unknown error");
+            return;
+        }
+
+        let label = data.prediction_label.toLowerCase();
+
+        if (label.includes("normal")) {
+            resultBox.className = "result-box normal";
+            resultBox.innerHTML = "Prediction: NORMAL ✔️";
+        } else if (label.includes("abnormal")) {
+            resultBox.className = "result-box abnormal";
+            resultBox.innerHTML = "Prediction: ABNORMAL ❗";
+        } else {
+            resultBox.className = "result-box inconclusive";
+            resultBox.innerHTML = "Prediction: INCONCLUSIVE ❓";
+        }
+
+    } catch (err) {
+        resultBox.className = "result-box inconclusive";
+        resultBox.innerHTML = "Network Error ❌<br>" + err;
+    }
 }
 </script>
 
