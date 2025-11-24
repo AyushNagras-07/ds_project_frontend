@@ -1,212 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
+<meta charset="UTF-8">
 <title>Healthcare Test Result Prediction</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
     body {
-        margin: 0;
-        padding: 0;
-        background: linear-gradient(135deg, #e9f0ff, #f7f9ff);
-        font-family: "Segoe UI", Roboto, sans-serif;
+        font-family: "Segoe UI", Arial;
+        background: linear-gradient(135deg, #e3f2fd, #fce4ec);
+        padding: 20px;
     }
-
-    .container {
-        max-width: 900px;
-        background: white;
-        margin: 40px auto;
-        border-radius: 16px;
-        padding: 30px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        animation: fadeIn 0.7s ease-in-out;
+    .card {
+        max-width: 650px;
+        margin: auto;
+        background: #fff;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        animation: fadeIn 0.5s ease;
     }
-
     @keyframes fadeIn {
-        from {opacity: 0; transform: translateY(20px);}
-        to {opacity: 1; transform: translateY(0);}
+        from {opacity:0; transform: translateY(10px);}
+        to {opacity:1; transform: translateY(0);}
     }
-
     h1 {
-        text-align: center;
-        color: #222;
-        margin-bottom: 25px;
+        text-align:center;
+        margin-top:0;
     }
-
     .grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
     }
-
-    label {
-        font-weight: 600;
-        color: #333;
-    }
-
     input {
         width: 100%;
         padding: 10px;
-        border-radius: 8px;
+        margin-top: 4px;
+        border-radius: 6px;
         border: 1px solid #ccc;
-        transition: all .2s;
     }
-
-    input:focus {
-        border-color: #4a90e2;
-        box-shadow: 0 0 5px rgba(74,144,226,0.4);
-        outline: none;
-    }
-
     button {
-        padding: 12px;
         width: 100%;
+        padding: 12px;
         border: none;
-        border-radius: 10px;
+        border-radius: 6px;
         font-size: 16px;
         font-weight: bold;
-        cursor: pointer;
-        margin-top: 10px;
-        transition: .3s;
+        cursor:pointer;
+        background: #1976d2;
+        color:white;
+        transition: 0.3s;
     }
-
-    .predict-btn { background: #007bff; color: white; }
-    .predict-btn:hover { background: #005fcc; }
-
-    .result-box {
-        margin-top: 20px;
-        padding: 18px;
-        border-radius: 10px;
-        font-size: 20px;
-        text-align: center;
-        font-weight: 700;
-        display: none;
+    button:hover {
+        background:#0d47a1;
     }
-
-    .normal { background: #e7ffe7; color: #0a8a0a; }
-    .abnormal { background: #ffe7e7; color: #c00000; }
-    .inconclusive { background: #fff7d9; color: #8a7300; }
-
+    .result {
+        margin-top:20px;
+        padding:14px;
+        border-radius:8px;
+        font-size:18px;
+        font-weight:bold;
+        text-align:center;
+        animation: fadeIn 0.3s ease;
+    }
+    .normal { background:#e8f5e9; color:#2e7d32; }
+    .abnormal { background:#ffebee; color:#c62828; }
+    .inconclusive { background:#fff8e1; color:#f9a825; }
 </style>
 </head>
-
 <body>
 
-<div class="container">
-    <h1>Healthcare Test Result Prediction</h1>
+<div class="card">
+    <h1>Healthcare Test Prediction</h1>
 
     <div class="grid">
-        <div>
-            <label>Age</label>
-            <input id="Age" type="number" value="30">
-        </div>
 
-        <div>
-            <label>Gender (0=female, 1=male)</label>
-            <input id="Gender" type="number" value="1">
-        </div>
+        <div><label>Age</label><input id="Age" type="number"></div>
+        <div><label>Gender</label><input id="Gender" type="number" min="0" max="1"></div>
 
-        <div>
-            <label>Blood Type</label>
-            <input id="Blood_Type" type="number" value="1">
-        </div>
+        <div><label>Blood Type</label><input id="Blood_Type" type="number"></div>
+        <div><label>Medical Condition</label><input id="Medical_Condition" type="number"></div>
 
-        <div>
-            <label>Medical Condition</label>
-            <input id="Medical_Condition" type="number" value="0">
-        </div>
+        <div><label>Billing Amount</label><input id="Billing_Amount" type="number"></div>
+        <div><label>Admission Type</label><input id="Admission_Type" type="number"></div>
 
-        <div>
-            <label>Billing Amount</label>
-            <input id="Billing_Amount" type="number" value="20000">
-        </div>
+        <div><label>Medication</label><input id="Medication" type="number"></div>
+        <div><label>Symptom Severity</label><input id="Symptom_Severity" type="number"></div>
 
-        <div>
-            <label>Admission Type</label>
-            <input id="Admission_Type" type="number" value="1">
-        </div>
+        <div><label>Prior Hospital Visits</label><input id="Prior_Hospital_Visits" type="number"></div>
+        <div><label>High BP Flag</label><input id="High_BP_Flag" type="number"></div>
 
-        <div>
-            <label>Medication</label>
-            <input id="Medication" type="number" value="1">
-        </div>
+        <div><label>High Sugar Flag</label><input id="High_Sugar_Flag" type="number"></div>
+        <div><label>Fever Flag</label><input id="Fever_Flag" type="number"></div>
 
-        <div>
-            <label>Symptom Severity (0–10)</label>
-            <input id="Symptom_Severity" type="number" value="4">
-        </div>
-
-        <div>
-            <label>Prior Hospital Visits</label>
-            <input id="Prior_Hospital_Visits" type="number" value="1">
-        </div>
-
-        <div>
-            <label>High BP (0/1)</label>
-            <input id="High_BP_Flag" type="number" value="0">
-        </div>
-
-        <div>
-            <label>High Sugar (0/1)</label>
-            <input id="High_Sugar_Flag" type="number" value="0">
-        </div>
-
-        <div>
-            <label>Fever (0/1)</label>
-            <input id="Fever_Flag" type="number" value="0">
-        </div>
-
-        <div style="grid-column: span 2;">
+        <div style="grid-column:1/-1">
             <label>Risk Score</label>
-            <input id="Risk_Score" type="number" value="50">
+            <input id="Risk_Score" type="number">
+        </div>
+
+        <div style="grid-column:1/-1">
+            <button onclick="predict()">Predict</button>
         </div>
     </div>
 
-    <button class="predict-btn" onclick="predict()">Predict</button>
+    <div id="resultBox" style="display:none" class="result"></div>
 
-    <div id="resultBox" class="result-box"></div>
 </div>
 
 <script>
+const API = "https://ds-project-backend.onrender.com/predict";
+
 async function predict() {
     const payload = {
-        Age: +document.getElementById("Age").value,
-        Gender: +document.getElementById("Gender").value,
-        Blood_Type: +document.getElementById("Blood_Type").value,
-        Medical_Condition: +document.getElementById("Medical_Condition").value,
-        Billing_Amount: +document.getElementById("Billing_Amount").value,
-        Admission_Type: +document.getElementById("Admission_Type").value,
-        Medication: +document.getElementById("Medication").value,
-        Symptom_Severity: +document.getElementById("Symptom_Severity").value,
-        Prior_Hospital_Visits: +document.getElementById("Prior_Hospital_Visits").value,
-        High_BP_Flag: +document.getElementById("High_BP_Flag").value,
-        High_Sugar_Flag: +document.getElementById("High_Sugar_Flag").value,
-        Fever_Flag: +document.getElementById("Fever_Flag").value,
-        Risk_Score: +document.getElementById("Risk_Score").value
+        Age: Number(Age.value),
+        Gender: Number(Gender.value),
+        Blood_Type: Number(Blood_Type.value),
+        Medical_Condition: Number(Medical_Condition.value),
+        Billing_Amount: Number(Billing_Amount.value),
+        Admission_Type: Number(Admission_Type.value),
+        Medication: Number(Medication.value),
+        Symptom_Severity: Number(Symptom_Severity.value),
+        Prior_Hospital_Visits: Number(Prior_Hospital_Visits.value),
+        High_BP_Flag: Number(High_BP_Flag.value),
+        High_Sugar_Flag: Number(High_Sugar_Flag.value),
+        Fever_Flag: Number(Fever_Flag.value),
+        Risk_Score: Number(Risk_Score.value)
     };
 
-    const res = await fetch("https://ds-project-backend.onrender.com/predict", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+    let res = await fetch(API, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
         body: JSON.stringify(payload)
     });
 
-    const data = await res.json();
+    let data = await res.json();
+
     const box = document.getElementById("resultBox");
-
     box.style.display = "block";
-    box.className = "result-box";
 
-    if (data.prediction_label === "Normal") {
-        box.classList.add("normal");
-        box.textContent = "Prediction: NORMAL ✔️";
-    } else if (data.prediction_label === "Abnormal") {
-        box.classList.add("abnormal");
-        box.textContent = "Prediction: ABNORMAL ❗";
-    } else {
-        box.classList.add("inconclusive");
-        box.textContent = "Prediction: INCONCLUSIVE ❓";
+    if (!res.ok) {
+        box.className = "result abnormal";
+        box.innerHTML = "Server Error ❌ <br>" + data.detail;
+        return;
+    }
+
+    const label = data.prediction_label.toLowerCase();
+
+    if (label.includes("normal")){
+        box.className = "result normal";
+        box.innerHTML = "Prediction: NORMAL ✔️";
+    }
+    else if (label.includes("abnormal")){
+        box.className = "result abnormal";
+        box.innerHTML = "Prediction: ABNORMAL ❗";
+    }
+    else {
+        box.className = "result inconclusive";
+        box.innerHTML = "Prediction: INCONCLUSIVE ❓";
     }
 }
 </script>
