@@ -347,23 +347,28 @@ async function predict() {
 function showResult(label) {
     let box = document.getElementById("resultBox");
     box.style.display = "block";
-    box.className = ""; // reset classes
-    
-    label = (label || "").toLowerCase();
+    box.className = "result";
 
-    if (label.includes("normal")) {
+    label = label.toLowerCase().trim();
+
+    if (label === "abnormal") {
+        box.classList.add("abnormal");
+        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>ABNORMAL ❗</h2>";
+    }
+    else if (label === "inconclusive") {
+        box.classList.add("inconclusive");
+        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>INCONCLUSIVE ❓</h2>";
+    }
+    else if (label === "normal") {
         box.classList.add("normal");
         box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>NORMAL ✔️</h2>";
-    } 
-    else if (label.includes("inconclusive")) {
-        box.classList.add("inconclusive");
-        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>inconclusive ❗</h2>";
-    } 
+    }
     else {
-        box.classList.add("abnormal");
-        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>abnormal ❓</h2>";
+        box.classList.add("inconclusive");
+        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>UNKNOWN ❔</h2>";
     }
 }
+
 
 function showError(msg) {
     let box = document.getElementById("resultBox");
