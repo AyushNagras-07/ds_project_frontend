@@ -1,410 +1,199 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Healthcare Test Result Prediction — Frontend v3</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <style>
-    :root{
-      --bg:#f4f7fb; --card:#ffffff; --muted:#6b7280;
-      --accent:#0066ff; --accent-2:#00a676; --danger:#d64545;
-      --glass: rgba(255,255,255,0.6);
-      --radius:12px;
-      --maxw:1040px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto, "Helvetica Neue", Arial;
-      background: linear-gradient(180deg,#f7fbff, var(--bg));
-      color:#111;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      padding:28px;
-    }
-    .wrap{max-width:var(--maxw);margin:0 auto;}
-    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
-    header h1{margin:0;font-size:20px}
-    header p{margin:0;color:var(--muted);font-size:13px}
+<meta charset="UTF-8">
+<title>Healthcare Prediction V3</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    .card{
-      background:var(--card);
-      border-radius:var(--radius);
-      box-shadow: 0 8px 30px rgba(16,24,40,0.06);
-      padding:18px; display:grid; gap:14px;
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #141e30, #243b55);
+        color: #fff;
     }
 
-    .topbar{display:flex;justify-content:space-between;gap:12px;align-items:center}
-    .presets{display:flex;gap:8px;flex-wrap:wrap}
-    button.preset{background:transparent;border:1px solid #e6eefc;padding:8px 10px;border-radius:10px;cursor:pointer}
-    button.primary{background:linear-gradient(90deg,var(--accent),#2c7fff); color:white;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;box-shadow:0 6px 18px rgba(2,6,23,0.08)}
-    button.ghost{background:transparent;border:1px solid #eee;padding:8px 12px;border-radius:10px;cursor:pointer}
+    .container {
+        max-width: 750px;
+        margin: 50px auto;
+        padding: 25px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        backdrop-filter: blur(12px);
+    }
 
-    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-    .grid .full{grid-column:1/-1}
-    label{font-size:13px;color:#333;font-weight:600}
-    input[type="number"], select, input[type="file"]{
-      width:100%; padding:10px;border-radius:10px;border:1px solid #e6e9ef;background:transparent;
-      font-size:14px; margin-top:6px;
-    }
-    .row{
-      display:flex; gap:8px; align-items:center;
-    }
-    .muted{font-size:13px;color:var(--muted);margin-top:4px}
-    .result{
-      padding:14px;border-radius:10px;font-weight:700;
-      display:flex;align-items:center;gap:12px;
-    }
-    .result.normal{background:linear-gradient(180deg,#f0fff4,#e6fff2);color:#026437}
-    .result.abnormal{background:linear-gradient(180deg,#fff2f2,#fff1f0);color:#8b0000}
-    .result.inconclusive{background:linear-gradient(180deg,#fffaf0,#fff8e6);color:#7a5c00}
+    h1 { text-align: center; margin-bottom: 15px; }
 
-    .mini{font-size:12px;color:var(--muted)}
-    .small{font-size:13px;color:#333}
-    .controls{display:flex;gap:8px}
-    .upload-area{border:1px dashed #e3e8f0;padding:12px;border-radius:10px;text-align:center;background:linear-gradient(180deg,rgba(250,250,255,0.6),transparent)}
-    .file-preview{max-height:240px;overflow:auto;border-radius:8px;border:1px solid #f0f2f5;padding:8px;margin-top:8px}
-    .spinner{width:20px;height:20px;border-radius:50%;border:3px solid rgba(0,0,0,0.08);border-top-color:var(--accent);animation:spin 1s linear infinite;display:inline-block}
-    @keyframes spin{to{transform:rotate(360deg)}}
-
-    footer{font-size:13px;color:var(--muted);margin-top:12px;display:flex;justify-content:space-between;align-items:center}
-    .small-btn{font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid #e6eefc;background:white;cursor:pointer}
-    .hint{font-size:13px;color:var(--muted)}
-    /* responsive */
-    @media (max-width:880px){
-      .grid{grid-template-columns:1fr}
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
     }
-  </style>
+
+    input {
+        padding: 10px;
+        width: 100%;
+        border-radius: 8px;
+        border: none;
+        outline: none;
+    }
+
+    button {
+        padding: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        width: 100%;
+        border: none;
+        margin-top: 10px;
+        background: #00c6ff;
+        color: black;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    button:hover { background: #0096c7; }
+
+    #resultBox {
+        display: none;
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 10px;
+        font-size: 20px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .normal { background: #d4ffe0; color:#065f2b; }
+    .abnormal { background:#ffd4d4; color:#8b0000; }
+    .inconclusive { background:#fff0c2; color:#7a5200; }
+
+    /* Loading animation */
+    #loading {
+        display: none;
+        text-align: center;
+        margin-top: 15px;
+    }
+    .spinner {
+        border: 4px solid rgba(255,255,255,0.3);
+        border-top: 4px solid #00c6ff;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 0.8s linear infinite;
+        margin: auto;
+    }
+    @keyframes spin {
+        100% { transform: rotate(360deg); }
+    }
+</style>
 </head>
+
 <body>
-  <div class="wrap">
-    <header>
-      <div>
-        <h1>Healthcare Test Result Prediction — Frontend v3</h1>
-        <p>Advanced UI for your deployed model. Quick-presets, batch CSV support, defaults & remembered inputs.</p>
-      </div>
-      <div class="mini hint">Sample dataset file: <code>/mnt/data/enhanced_healthcare_dataset.csv</code></div>
-    </header>
 
-    <div class="card">
-      <div class="topbar">
-        <div class="presets">
-          <button class="preset" onclick="applyPreset('normal')">Preset — Likely Normal</button>
-          <button class="preset" onclick="applyPreset('abnormal')">Preset — Likely Abnormal</button>
-          <button class="preset" onclick="applyPreset('inconclusive')">Preset — Likely Inconclusive</button>
-          <button class="ghost" onclick="resetToDefaults()">Reset Defaults</button>
-        </div>
+<div class="container">
+    <h1>Healthcare Test Result Prediction</h1>
 
-        <div class="controls">
-          <select id="apiSelect" title="Select API endpoint">
-            <option value="https://ds-project-backend.onrender.com">Render (production)</option>
-            <option value="http://127.0.0.1:8000">Local (dev)</option>
-          </select>
-          <button class="small-btn" id="testBtn" onclick="quickTest()">Quick Test</button>
-        </div>
-      </div>
-
-      <div class="grid">
-        <div>
-          <label>Age</label>
-          <input id="Age" type="number" min="0" max="120" />
-          <div class="muted">Patient age (years)</div>
-        </div>
-
-        <div>
-          <label>Gender (0 = Female, 1 = Male)</label>
-          <select id="Gender">
-            <option value="0">0 — Female</option>
-            <option value="1">1 — Male</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Blood Type (encoded)</label>
-          <input id="Blood_Type" type="number" min="0"/>
-        </div>
-
-        <div>
-          <label>Medical Condition (encoded)</label>
-          <input id="Medical_Condition" type="number" min="0"/>
-        </div>
-
-        <div>
-          <label>Billing Amount</label>
-          <input id="Billing_Amount" type="number" min="0" step="1"/>
-        </div>
-
-        <div>
-          <label>Admission Type (encoded)</label>
-          <input id="Admission_Type" type="number" min="0"/>
-        </div>
-
-        <div>
-          <label>Medication (encoded)</label>
-          <input id="Medication" type="number" min="0"/>
-        </div>
-
-        <div>
-          <label>Symptom Severity (0–10)</label>
-          <input id="Symptom_Severity" type="number" min="0" max="10"/>
-        </div>
-
-        <div>
-          <label>Prior Hospital Visits</label>
-          <input id="Prior_Hospital_Visits" type="number" min="0"/>
-        </div>
-
-        <div>
-          <label>High BP Flag (0/1)</label>
-          <select id="High_BP_Flag"><option value="0">0</option><option value="1">1</option></select>
-        </div>
-
-        <div>
-          <label>High Sugar Flag (0/1)</label>
-          <select id="High_Sugar_Flag"><option value="0">0</option><option value="1">1</option></select>
-        </div>
-
-        <div>
-          <label>Fever Flag (0/1)</label>
-          <select id="Fever_Flag"><option value="0">0</option><option value="1">1</option></select>
-        </div>
-
-        <div class="full">
-          <label>Risk Score</label>
-          <input id="Risk_Score" type="number" min="0" max="200"/>
-          <div class="muted">Weighted risk index (0–100). Default values provided for convenience.</div>
-        </div>
-
-        <!-- Actions -->
-        <div class="full" style="display:flex;gap:10px;align-items:center">
-          <button class="primary" onclick="predict()">Predict</button>
-          <input id="file" type="file" accept=".csv" style="flex:1" />
-          <button class="ghost" onclick="uploadBatch()">Batch Predict CSV</button>
-          <div id="spinner" style="display:none;margin-left:12px"><span class="spinner"></span></div>
-        </div>
-
-        <!-- Result -->
-        <div id="resultDiv" class="full" style="display:none"></div>
-
-        <!-- Batch area -->
-        <div id="batchArea" class="full" style="display:none">
-          <div class="upload-area">
-            <div class="muted">Batch predictions output (download CSV)</div>
-            <div id="downloadWrapper" style="margin-top:8px"><a id="downloadLink" href="#" style="display:none">Download CSV</a></div>
-            <div id="preview" class="file-preview"></div>
-          </div>
-        </div>
-      </div>
-
-      <footer>
-        <div class="mini">Tip: use <strong>Quick Test</strong> to run a built-in sample. Values are saved in the browser for convenience.</div>
-        <div class="mini">Made with ❤️ — Frontend v3</div>
-      </footer>
+    <div class="grid">
+        <input id="Age" placeholder="Age" value="35">
+        <input id="Gender" placeholder="Gender (0/1)" value="1">
+        <input id="Blood_Type" placeholder="Blood Type" value="1">
+        <input id="Medical_Condition" placeholder="Medical Condition" value="0">
+        <input id="Billing_Amount" placeholder="Billing Amount" value="20000">
+        <input id="Admission_Type" placeholder="Admission Type" value="1">
+        <input id="Medication" placeholder="Medication" value="1">
+        <input id="Symptom_Severity" placeholder="Symptom Severity 0–10" value="4">
+        <input id="Prior_Hospital_Visits" placeholder="Prior Visits" value="1">
+        <input id="High_BP_Flag" placeholder="High BP Flag (0/1)" value="0">
+        <input id="High_Sugar_Flag" placeholder="High Sugar Flag (0/1)" value="0">
+        <input id="Fever_Flag" placeholder="Fever Flag (0/1)" value="0">
+        <input id="Risk_Score" placeholder="Risk Score" value="50">
     </div>
-  </div>
+
+    <button onclick="predict()">🚀 Predict Result</button>
+
+    <div id="loading">
+        <div class="spinner"></div>
+        <p>Processing...</p>
+    </div>
+
+    <div id="resultBox"></div>
+</div>
 
 <script>
-/* FRONTEND v3 JS
-   - Defaults + remember inputs
-   - Switch API endpoint
-   - Validation + nice UI
-   - Batch upload + preview
-*/
+const API = "https://ds-project-backend.onrender.com/predict";
 
-const DEFAULTS = {
-  Age: 35,
-  Gender: 0,
-  Blood_Type: 1,
-  Medical_Condition: 0,
-  Billing_Amount: 12000,
-  Admission_Type: 0,
-  Medication: 0,
-  Symptom_Severity: 1,
-  Prior_Hospital_Visits: 0,
-  High_BP_Flag: 0,
-  High_Sugar_Flag: 0,
-  Fever_Flag: 0,
-  Risk_Score: 11
-};
+async function predict() {
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("resultBox").style.display = "none";
 
-const API_SELECT = document.getElementById('apiSelect');
-const spinner = document.getElementById('spinner');
+    const payload = {
+        Age: Number(Age.value),
+        Gender: Number(Gender.value),
+        Blood_Type: Number(Blood_Type.value),
+        Medical_Condition: Number(Medical_Condition.value),
+        Billing_Amount: Number(Billing_Amount.value),
+        Admission_Type: Number(Admission_Type.value),
+        Medication: Number(Medication.value),
+        Symptom_Severity: Number(Symptom_Severity.value),
+        Prior_Hospital_Visits: Number(Prior_Hospital_Visits.value),
+        High_BP_Flag: Number(High_BP_Flag.value),
+        High_Sugar_Flag: Number(High_Sugar_Flag.value),
+        Fever_Flag: Number(Fever_Flag.value),
+        Risk_Score: Number(Risk_Score.value)
+    };
 
-function setField(id, value){ const el=document.getElementById(id); if(!el) return; el.value = value; }
-function getField(id){ const el=document.getElementById(id); return el ? el.value : null; }
+    try {
+        let res = await fetch(API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
 
-// init: load from localStorage or set defaults
-function initForm(){
-  const stored = localStorage.getItem('hf_inputs_v3');
-  const values = stored ? JSON.parse(stored) : DEFAULTS;
-  for(const k in DEFAULTS) setField(k, values[k] ?? DEFAULTS[k]);
-}
-initForm();
+        let data = await res.json();
+        document.getElementById("loading").style.display = "none";
 
-function saveForm(){
-  const obj = {};
-  for(const k in DEFAULTS) obj[k] = getField(k);
-  localStorage.setItem('hf_inputs_v3', JSON.stringify(obj));
-}
+        if (!res.ok) {
+            showError(data.detail || "Unknown error");
+            return;
+        }
 
-function applyPreset(kind){
-  if(kind==='normal'){
-    setField('Age', 28); setField('Gender', 0); setField('Symptom_Severity', 0);
-    setField('Risk_Score', 8); setField('Billing_Amount', 4000); setField('Prior_Hospital_Visits', 0);
-    setField('High_BP_Flag', 0); setField('High_Sugar_Flag', 0); setField('Fever_Flag', 0);
-  } else if(kind==='abnormal'){
-    setField('Age', 68); setField('Gender', 1); setField('Symptom_Severity', 9);
-    setField('Risk_Score', 86); setField('Billing_Amount', 120000); setField('Prior_Hospital_Visits', 6);
-    setField('High_BP_Flag', 1); setField('High_Sugar_Flag', 1); setField('Fever_Flag', 1);
-  } else {
-    setField('Age', 45); setField('Symptom_Severity', 4); setField('Risk_Score', 38);
-    setField('Billing_Amount', 28000); setField('Prior_Hospital_Visits', 1);
-    setField('High_BP_Flag', 0); setField('High_Sugar_Flag', 0); setField('Fever_Flag', 0);
-  }
-  saveForm();
-  showTemp('Preset applied', 1200);
-}
+        showResult(data.prediction_label);
 
-function resetToDefaults(){
-  for(const k in DEFAULTS) setField(k, DEFAULTS[k]);
-  saveForm(); showTemp('Defaults restored',1200);
-}
-
-// small toast
-function showTemp(msg, ms=1200){
-  const d = document.createElement('div'); d.textContent = msg;
-  d.style.position='fixed'; d.style.right='18px'; d.style.top='18px'; d.style.background='#111'; d.style.color='#fff';
-  d.style.padding='10px 14px'; d.style.borderRadius='8px'; d.style.opacity='0.95'; document.body.appendChild(d);
-  setTimeout(()=>d.remove(), ms);
-}
-
-function validatePayload(payload){
-  // Minimal checks
-  if(isNaN(payload.Age) || payload.Age<0) return "Invalid Age";
-  if(isNaN(payload.Billing_Amount) || payload.Billing_Amount<0) return "Invalid Billing Amount";
-  if(payload.Gender !== 0 && payload.Gender !== 1) return "Gender must be 0 or 1";
-  return null;
-}
-
-async function predict(){
-  saveForm();
-  const payload = {
-    Age: Number(getField('Age')),
-    Gender: Number(getField('Gender')),
-    Blood_Type: Number(getField('Blood_Type')),
-    Medical_Condition: Number(getField('Medical_Condition')),
-    Billing_Amount: Number(getField('Billing_Amount')),
-    Admission_Type: Number(getField('Admission_Type')),
-    Medication: Number(getField('Medication')),
-    Symptom_Severity: Number(getField('Symptom_Severity')),
-    Prior_Hospital_Visits: Number(getField('Prior_Hospital_Visits')),
-    High_BP_Flag: Number(getField('High_BP_Flag')),
-    High_Sugar_Flag: Number(getField('High_Sugar_Flag')),
-    Fever_Flag: Number(getField('Fever_Flag')),
-    Risk_Score: Number(getField('Risk_Score'))
-  };
-
-  const v = validatePayload(payload);
-  if(v){ alert("Validation error: "+v); return; }
-
-  const apiBase = API_SELECT.value.replace(/\/$/, '');
-  const url = apiBase + "/predict";
-
-  spinner.style.display='inline-block';
-  try{
-    const resp = await fetch(url, {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const json = await resp.json();
-    spinner.style.display='none';
-    if(!resp.ok){
-      console.error('Server error', json);
-      showResultError(json.detail || JSON.stringify(json));
-      return;
+    } catch (err) {
+        document.getElementById("loading").style.display = "none";
+        showError("❌ Network Error — Backend Offline");
     }
-    showResult(json);
-  }catch(err){
-    spinner.style.display='none';
-    console.error(err);
-    showResultError(err.message || String(err));
-  }
 }
 
-function showResult(obj){
-  const rd = document.getElementById('resultDiv');
-  rd.style.display='block';
-  rd.innerHTML = '';
-  let label = obj.prediction_label || obj.prediction || obj.prediction_encoded || '';
-  let cls = 'inconclusive';
-  if(String(label).toLowerCase().includes('normal')) cls='normal';
-  else if(String(label).toLowerCase().includes('abnormal')) cls='abnormal';
-  const box = document.createElement('div'); box.className = 'result ' + cls;
-  box.innerHTML = `<div style="font-size:16px">${label}</div><div class="muted small" style="margin-left:10px">encoded: ${obj.prediction_encoded ?? '-'}</div>`;
-  rd.appendChild(box);
-  showTemp('Prediction received',1000);
+function showResult(label) {
+    let box = document.getElementById("resultBox");
+    box.style.display = "block";
+    box.className = "";
+    box.classList.add("result");
+
+    label = label.toLowerCase();
+
+    if (label.includes("normal")) {
+        box.classList.add("normal");
+        box.innerHTML = "Prediction: NORMAL ✔️";
+    } else if (label.includes("abnormal")) {
+        box.classList.add("abnormal");
+        box.innerHTML = "Prediction: ABNORMAL ❗";
+    } else {
+        box.classList.add("inconclusive");
+        box.innerHTML = "Prediction: INCONCLUSIVE ❓";
+    }
 }
 
-// show server error nicely
-function showResultError(msg){
-  const rd = document.getElementById('resultDiv');
-  rd.style.display='block'; rd.innerHTML = '';
-  const box = document.createElement('div'); box.className = 'result inconclusive';
-  box.style.background='#fff2f2'; box.style.color='#8b0000';
-  box.innerHTML = `<div>Server Error ❌</div><div class="muted" style="font-weight:600">${msg}</div>`;
-  rd.appendChild(box);
+function showError(msg) {
+    let box = document.getElementById("resultBox");
+    box.style.display = "block";
+    box.className = "result abnormal";
+    box.innerHTML = "Server Error ❌<br>" + msg;
 }
-
-// Quick Test - uses reasonable defaults and triggers prediction
-function quickTest(){
-  applyPreset('normal'); predict();
-}
-
-// Batch CSV
-async function uploadBatch(){
-  const file = document.getElementById('file').files[0];
-  if(!file){ alert('Select a CSV file first'); return; }
-  const apiBase = API_SELECT.value.replace(/\/$/,'');
-  const url = apiBase + '/predict_batch';
-  spinner.style.display='inline-block';
-  try{
-    const form = new FormData(); form.append('file', file);
-    const res = await fetch(url, { method:'POST', body: form });
-    const json = await res.json();
-    spinner.style.display='none';
-    if(!res.ok){ showResultError(json.detail || JSON.stringify(json)); return; }
-    // Provide download and preview
-    const csv = json.content;
-    document.getElementById('downloadLink').href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-    document.getElementById('downloadLink').download = json.filename || 'predictions.csv';
-    document.getElementById('downloadLink').style.display='inline-block';
-    document.getElementById('batchArea').style.display='block';
-    document.getElementById('preview').textContent = csv.split('\n').slice(0,20).join('\n');
-    showTemp('Batch completed', 1600);
-  }catch(e){
-    spinner.style.display='none';
-    console.error(e); showResultError(String(e));
-  }
-}
-
-/* Export sample dataset link: path provided in session */
-function downloadSample(){
-  // Developer-provided local path (for convenience in notebook/local env)
-  const url = "/mnt/data/enhanced_healthcare_dataset.csv";
-  // open in new tab (may not work on deployed frontend -> server must serve this file)
-  window.open(url, '_blank');
-}
-
-// initial defaults
-document.getElementById('apiSelect').value = 'https://ds-project-backend.onrender.com';
-document.querySelector('#testBtn').addEventListener('click', quickTest);
-
-// store form each change
-document.querySelectorAll('input, select').forEach(el=>{
-  el.addEventListener('change', saveForm);
-  el.addEventListener('input', saveForm);
-});
-
 </script>
+
 </body>
 </html>
