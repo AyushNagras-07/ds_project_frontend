@@ -6,21 +6,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.07);
+        --glass-border: rgba(255, 255, 255, 0.12);
+        --primary-grad: linear-gradient(90deg, #00eaff, #00b7ff);
+        --text-color: #e0e0e0;
+    }
+
     body {
         margin: 0; padding: 0;
         font-family: "Poppins", sans-serif;
         background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
         color: #fff;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .container {
-        max-width: 680px;
-        margin: 45px auto;
-        padding: 25px;
-        border-radius: 18px;
-        background: rgba(255,255,255,0.07);
-        box-shadow: 0 10px 45px rgba(0,0,0,0.45);
-        backdrop-filter: blur(12px);
+        width: 100%;
+        max-width: 720px;
+        margin: 20px;
+        padding: 30px;
+        border-radius: 20px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 15px 45px rgba(0,0,0,0.45);
+        backdrop-filter: blur(16px);
         animation: fadeIn 0.7s ease;
     }
 
@@ -31,122 +44,185 @@
 
     h1 {
         text-align: center;
-        margin-bottom: 15px;
+        margin-bottom: 5px;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    .subtitle {
+        text-align: center;
+        font-size: 0.9rem;
+        color: rgba(255,255,255,0.6);
+        margin-bottom: 25px;
+    }
+
+    /* --- Quick Fill Section --- */
+    .preset-container {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .preset-btn {
+        padding: 8px 16px;
+        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(0,0,0,0.2);
+        color: #bbb;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.3s ease;
+    }
+
+    .preset-btn:hover, .preset-btn.active {
+        background: rgba(255,255,255,0.15);
+        color: #fff;
+        border-color: #00eaff;
+        transform: translateY(-2px);
+    }
+
+    /* --- Form Grid --- */
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .input-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .input-group label {
+        font-size: 11px;
+        color: #00eaff;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
         font-weight: 600;
     }
 
-    .grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-top: 20px;
-    }
-
     input {
-        padding: 7px 10px;
+        padding: 10px 12px;
         font-size: 14px;
         width: 100%;
-        border-radius: 6px;
-        border: none;
-        outline: none;
-        background: rgba(255,255,255,0.15);
+        box-sizing: border-box;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        background: rgba(0, 0, 0, 0.2);
         color: #fff;
         transition: 0.25s;
     }
 
     input:focus {
-        background: rgba(255,255,255,0.25);
-        transform: scale(1.03);
+        background: rgba(0, 0, 0, 0.4);
+        border-color: rgba(0, 234, 255, 0.5);
+        outline: none;
     }
 
-    button {
-        padding: 12px;
+    /* --- Main Action Button --- */
+    .btn-predict {
+        padding: 14px;
         font-size: 17px;
         font-weight: bold;
         width: 100%;
         border: none;
-        margin-top: 20px;
-        background: linear-gradient(90deg, #00eaff, #00b7ff);
-        color: black;
+        margin-top: 25px;
+        background: var(--primary-grad);
+        color: #002b36;
         border-radius: 10px;
         cursor: pointer;
         transition: 0.3s;
-        box-shadow: 0 0 10px rgba(0,238,255,0.5);
+        box-shadow: 0 0 15px rgba(0,238,255,0.3);
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
-    button:hover {
-        background: linear-gradient(90deg, #00b7ff, #008cff);
-        transform: scale(1.02);
+    .btn-predict:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 25px rgba(0,238,255,0.6);
     }
 
+    /* --- Results --- */
     #resultBox {
         display: none;
         margin-top: 22px;
-        padding: 15px;
-        border-radius: 10px;
-        font-size: 19px;
+        padding: 20px;
+        border-radius: 12px;
+        font-size: 18px;
         text-align: center;
         font-weight: bold;
         animation: pop 0.3s ease;
+        border: 1px solid rgba(255,255,255,0.1);
     }
 
     @keyframes pop {
-        from { transform: scale(0.6); opacity: 0; }
+        from { transform: scale(0.9); opacity: 0; }
         to   { transform: scale(1); opacity: 1; }
     }
 
-    .normal { background:#d4ffe0; color:#065f2b; }
-    .abnormal { background:#ffd4d4; color:#8b0000; }
-    .inconclusive { background:#fff0c2; color:#7a5200; }
+    .normal { background: rgba(6, 95, 43, 0.4); color: #80ffaa; border-color: #065f2b; }
+    .abnormal { background: rgba(139, 0, 0, 0.4); color: #ff8080; border-color: #8b0000; }
+    .inconclusive { background: rgba(122, 82, 0, 0.4); color: #ffcc66; border-color: #7a5200; }
 
-    /* Loading Spinner */
+    /* --- Loading & Error --- */
     #loading { display: none; text-align: center; margin-top: 15px; }
     .spinner {
-        border: 4px solid rgba(255,255,255,0.3);
-        border-top: 4px solid #00eaff;
+        border: 3px solid rgba(255,255,255,0.1);
+        border-top: 3px solid #00eaff;
         border-radius: 50%;
-        width: 40px; height: 40px;
+        width: 30px; height: 30px;
         animation: spin 0.8s linear infinite;
         margin: auto;
+        margin-bottom: 10px;
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    /* Error shake */
+    .shake { animation: shake 0.4s ease; }
     @keyframes shake {
         0%,100% { transform: translateX(0); }
         20%,60% { transform: translateX(-6px); }
         40%,80% { transform: translateX(6px); }
     }
-    .shake { animation: shake 0.4s ease; }
 </style>
 </head>
 
 <body>
 
 <div class="container">
-    <h1>Healthcare Test Result Prediction</h1>
+    <h1>Healthcare Prediction</h1>
+    <div class="subtitle">V4 Ultra-X Diagnostics Model</div>
 
-    <div class="grid">
-        <input id="Age" placeholder="Age" value="35">
-        <input id="Gender" placeholder="Gender (0/1)" value="1">
-        <input id="Blood_Type" placeholder="Blood Type" value="1">
-        <input id="Medical_Condition" placeholder="Medical Condition" value="0">
-        <input id="Billing_Amount" placeholder="Billing Amount" value="20000">
-        <input id="Admission_Type" placeholder="Admission Type" value="1">
-        <input id="Medication" placeholder="Medication" value="1">
-        <input id="Symptom_Severity" placeholder="Severity 0–10" value="4">
-        <input id="Prior_Hospital_Visits" placeholder="Prior Visits" value="1">
-        <input id="High_BP_Flag" placeholder="BP High (0/1)" value="0">
-        <input id="High_Sugar_Flag" placeholder="Sugar High (0/1)" value="0">
-        <input id="Fever_Flag" placeholder="Fever (0/1)" value="0">
-        <input id="Risk_Score" placeholder="Risk Score" value="50">
+    <div class="preset-container">
+        <button class="preset-btn" onclick="fillPreset('healthy')">🍃 Test: Low Risk</button>
+        <button class="preset-btn" onclick="fillPreset('risk')">⚠️ Test: High Risk</button>
+        <button class="preset-btn" onclick="fillPreset('random')">🎲 Test: Random</button>
+        <button class="preset-btn" style="color:#ff6b6b" onclick="clearForm()">✕ Clear</button>
     </div>
 
-    <button onclick="predict()">🚀 Predict</button>
+    <div class="grid">
+        <div class="input-group"><label>Age</label><input type="number" id="Age" placeholder="e.g. 45"></div>
+        <div class="input-group"><label>Gender (0/1)</label><input type="number" id="Gender" placeholder="0 or 1"></div>
+        <div class="input-group"><label>Blood Type</label><input type="number" id="Blood_Type" placeholder="Code 1-8"></div>
+        <div class="input-group"><label>Condition ID</label><input type="number" id="Medical_Condition" placeholder="Code"></div>
+        <div class="input-group"><label>Billing ($)</label><input type="number" id="Billing_Amount" placeholder="Amount"></div>
+        <div class="input-group"><label>Admit Type</label><input type="number" id="Admission_Type" placeholder="Code"></div>
+        <div class="input-group"><label>Medication</label><input type="number" id="Medication" placeholder="Code"></div>
+        <div class="input-group"><label>Severity (1-10)</label><input type="number" id="Symptom_Severity" placeholder="1 to 10"></div>
+        <div class="input-group"><label>Prior Visits</label><input type="number" id="Prior_Hospital_Visits" placeholder="Count"></div>
+        <div class="input-group"><label>High BP? (0/1)</label><input type="number" id="High_BP_Flag" placeholder="0 or 1"></div>
+        <div class="input-group"><label>High Sugar? (0/1)</label><input type="number" id="High_Sugar_Flag" placeholder="0 or 1"></div>
+        <div class="input-group"><label>Fever? (0/1)</label><input type="number" id="Fever_Flag" placeholder="0 or 1"></div>
+        <div class="input-group"><label>Risk Score</label><input type="number" id="Risk_Score" placeholder="Metric"></div>
+    </div>
+
+    <button class="btn-predict" onclick="predict()">🚀 Analyze Patient Data</button>
 
     <div id="loading">
         <div class="spinner"></div>
-        <p>Processing...</p>
+        <small style="color:#aaa">Processing algorithm...</small>
     </div>
 
     <div id="resultBox"></div>
@@ -155,25 +231,97 @@
 <script>
 const API = "https://ds-project-backend.onrender.com/predict";
 
+// --- 1. PRESET DATA CONFIGURATION ---
+const presets = {
+    healthy: {
+        Age: 25, Gender: 0, Blood_Type: 1, Medical_Condition: 0, Billing_Amount: 5000,
+        Admission_Type: 2, Medication: 3, Symptom_Severity: 1, Prior_Hospital_Visits: 0,
+        High_BP_Flag: 0, High_Sugar_Flag: 0, Fever_Flag: 0, Risk_Score: 10
+    },
+    risk: {
+        Age: 72, Gender: 1, Blood_Type: 3, Medical_Condition: 4, Billing_Amount: 45000,
+        Admission_Type: 1, Medication: 1, Symptom_Severity: 9, Prior_Hospital_Visits: 5,
+        High_BP_Flag: 1, High_Sugar_Flag: 1, Fever_Flag: 1, Risk_Score: 95
+    }
+};
+
+// --- 2. HELPER FUNCTIONS ---
+
+function fillPreset(type) {
+    let data = {};
+    
+    if (type === 'random') {
+        // Generate plausible random data
+        data = {
+            Age: Math.floor(Math.random() * 80) + 18,
+            Gender: Math.round(Math.random()),
+            Blood_Type: Math.floor(Math.random() * 8),
+            Medical_Condition: Math.floor(Math.random() * 5),
+            Billing_Amount: Math.floor(Math.random() * 50000),
+            Admission_Type: Math.floor(Math.random() * 3),
+            Medication: Math.floor(Math.random() * 5),
+            Symptom_Severity: Math.floor(Math.random() * 10),
+            Prior_Hospital_Visits: Math.floor(Math.random() * 5),
+            High_BP_Flag: Math.round(Math.random()),
+            High_Sugar_Flag: Math.round(Math.random()),
+            Fever_Flag: Math.round(Math.random()),
+            Risk_Score: Math.floor(Math.random() * 100)
+        };
+    } else {
+        data = presets[type];
+    }
+
+    // Fill inputs
+    for (let key in data) {
+        const el = document.getElementById(key);
+        if(el) el.value = data[key];
+    }
+    
+    // Clear result box on new fill
+    document.getElementById("resultBox").style.display = "none";
+}
+
+function clearForm() {
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => input.value = '');
+    document.getElementById("resultBox").style.display = "none";
+}
+
+// Initialize with Healthy preset on load
+window.onload = () => fillPreset('healthy');
+
+// --- 3. PREDICTION LOGIC ---
+
 async function predict() {
+    const getVal = (id) => Number(document.getElementById(id).value);
+
     const payload = {
-        Age: +document.getElementById('Age').value,
-        Gender: +document.getElementById('Gender').value,
-        Blood_Type: +document.getElementById('Blood_Type').value,
-        Medical_Condition: +document.getElementById('Medical_Condition').value,
-        Billing_Amount: +document.getElementById('Billing_Amount').value,
-        Admission_Type: +document.getElementById('Admission_Type').value,
-        Medication: +document.getElementById('Medication').value,
-        Symptom_Severity: +document.getElementById('Symptom_Severity').value,
-        Prior_Hospital_Visits: +document.getElementById('Prior_Hospital_Visits').value,
-        High_BP_Flag: +document.getElementById('High_BP_Flag').value,
-        High_Sugar_Flag: +document.getElementById('High_Sugar_Flag').value,
-        Fever_Flag: +document.getElementById('Fever_Flag').value,
-        Risk_Score: +document.getElementById('Risk_Score').value
+        Age: getVal('Age'),
+        Gender: getVal('Gender'),
+        Blood_Type: getVal('Blood_Type'),
+        Medical_Condition: getVal('Medical_Condition'),
+        Billing_Amount: getVal('Billing_Amount'),
+        Admission_Type: getVal('Admission_Type'),
+        Medication: getVal('Medication'),
+        Symptom_Severity: getVal('Symptom_Severity'),
+        Prior_Hospital_Visits: getVal('Prior_Hospital_Visits'),
+        High_BP_Flag: getVal('High_BP_Flag'),
+        High_Sugar_Flag: getVal('High_Sugar_Flag'),
+        Fever_Flag: getVal('Fever_Flag'),
+        Risk_Score: getVal('Risk_Score')
     };
 
-    document.getElementById("loading").style.display = "block";
-    document.getElementById("resultBox").style.display = "none";
+    // Basic validation
+    if(Object.values(payload).some(x => isNaN(x))) {
+        showError("Please enter valid numbers");
+        return;
+    }
+
+    const loading = document.getElementById("loading");
+    const resultBox = document.getElementById("resultBox");
+
+    loading.style.display = "block";
+    resultBox.style.display = "none";
 
     try {
         let res = await fetch(API, {
@@ -183,45 +331,45 @@ async function predict() {
         });
 
         let data = await res.json();
-        document.getElementById("loading").style.display = "none";
+        loading.style.display = "none";
 
         if (!res.ok) { return showError(data.detail || "Server Error"); }
 
         showResult(data.prediction_label);
 
-    } catch {
-        document.getElementById("loading").style.display = "none";
-        showError("Backend Offline ❌");
+    } catch (err) {
+        loading.style.display = "none";
+        console.error(err);
+        showError("Backend is offline or unreachable");
     }
 }
 
 function showResult(label) {
     let box = document.getElementById("resultBox");
     box.style.display = "block";
-    box.className = "";
-    box.classList.add("result");
-
-    label = label.toLowerCase();
+    box.className = ""; // reset classes
+    
+    label = (label || "").toLowerCase();
 
     if (label.includes("normal")) {
         box.classList.add("normal");
-        box.innerHTML = "Prediction: NORMAL ✔️";
+        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>NORMAL ✔️</h2>";
     } 
     else if (label.includes("abnormal")) {
         box.classList.add("abnormal");
-        box.innerHTML = "Prediction: ABNORMAL ❗";
+        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>ABNORMAL ❗</h2>";
     } 
     else {
         box.classList.add("inconclusive");
-        box.innerHTML = "Prediction: INCONCLUSIVE ❓";
+        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>INCONCLUSIVE ❓</h2>";
     }
 }
 
 function showError(msg) {
     let box = document.getElementById("resultBox");
     box.style.display = "block";
-    box.className = "result abnormal shake";
-    box.innerHTML = "❌ " + msg;
+    box.className = "abnormal shake";
+    box.innerHTML = "⚠️ " + msg;
 }
 </script>
 
