@@ -2,432 +2,389 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Healthcare Prediction — V5 Categorical</title>
+<title>Medi-AI V6: Diagnostics Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
     :root {
-        --glass-bg: rgba(255, 255, 255, 0.07);
-        --glass-border: rgba(255, 255, 255, 0.12);
-        --primary-grad: linear-gradient(90deg, #00eaff, #00b7ff);
-        --text-color: #e0e0e0;
+        --glass-bg: rgba(20, 30, 48, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --accent: #00f2ff;
+        --danger: #ff4b4b;
+        --success: #00d664;
     }
 
     body {
         margin: 0; padding: 0;
-        font-family: "Poppins", sans-serif;
-        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        font-family: "Segoe UI", Roboto, sans-serif;
+        background: radial-gradient(circle at center, #1a2a33 0%, #000000 100%);
         color: #fff;
         min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding-top: 40px;
+        overflow-x: hidden;
+    }
+
+    /* --- DASHBOARD LAYOUT --- */
+    .dashboard {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+        max-width: 1100px;
+        width: 95%;
+        margin-bottom: 50px;
+    }
+
+    @media (max-width: 900px) {
+        .dashboard { grid-template-columns: 1fr; }
+    }
+
+    /* --- GLASS PANELS --- */
+    .panel {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 25px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 0 30px rgba(0, 242, 255, 0.05);
+        position: relative;
+    }
+
+    h2 { margin: 0 0 20px 0; font-size: 1.2rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+
+    /* --- FORM GRID --- */
+    .input-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .field { display: flex; flex-direction: column; }
+    label { font-size: 0.75rem; color: #8899a6; margin-bottom: 5px; text-transform: uppercase; }
+    
+    input, select {
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #fff;
+        padding: 10px;
+        border-radius: 6px;
+        font-family: monospace;
+        transition: 0.3s;
+    }
+    input:focus, select:focus {
+        border-color: var(--accent);
+        outline: none;
+        box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+    }
+
+    /* --- CHART CONTAINER --- */
+    .chart-box {
+        position: relative;
+        height: 300px;
         display: flex;
         justify-content: center;
         align-items: center;
     }
 
-    .container {
-        width: 100%;
-        max-width: 750px;
-        margin: 20px;
-        padding: 30px;
-        border-radius: 20px;
-        background: var(--glass-bg);
-        border: 1px solid var(--glass-border);
-        box-shadow: 0 15px 45px rgba(0,0,0,0.45);
-        backdrop-filter: blur(16px);
-        animation: fadeIn 0.7s ease;
+    /* --- SMART ALERTS (TOASTS) --- */
+    #smart-alerts {
+        margin-top: 15px;
+        min-height: 40px;
     }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-
-    h1 {
-        text-align: center;
+    .alert-tag {
+        display: inline-block;
+        font-size: 0.8rem;
+        padding: 5px 10px;
+        border-radius: 4px;
+        margin-right: 5px;
         margin-bottom: 5px;
-        font-weight: 600;
-        letter-spacing: 1px;
+        background: rgba(255, 165, 0, 0.2);
+        color: orange;
+        border: 1px solid orange;
+        animation: slideIn 0.3s ease;
     }
 
-    .subtitle {
-        text-align: center;
-        font-size: 0.9rem;
-        color: rgba(255,255,255,0.6);
-        margin-bottom: 25px;
-    }
+    @keyframes slideIn { from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:translateY(0);} }
 
-    /* --- Quick Fill Section --- */
-    .preset-container {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        margin-bottom: 25px;
-        flex-wrap: wrap;
-    }
-
-    .preset-btn {
-        padding: 8px 16px;
-        border: 1px solid rgba(255,255,255,0.2);
-        background: rgba(0,0,0,0.2);
-        color: #bbb;
-        border-radius: 30px;
-        cursor: pointer;
-        font-size: 13px;
-        transition: all 0.3s ease;
-    }
-
-    .preset-btn:hover {
-        background: rgba(255,255,255,0.15);
-        color: #fff;
-        border-color: #00eaff;
-        transform: translateY(-2px);
-    }
-
-    /* --- Form Grid --- */
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 15px;
-    }
-
-    .input-group {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .input-group label {
-        font-size: 11px;
-        color: #00eaff;
-        margin-bottom: 4px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 600;
-    }
-
-    /* Styling for both Input and Select */
-    input, select {
-        padding: 10px 12px;
-        font-size: 14px;
+    /* --- ACTION BUTTON --- */
+    .btn-main {
         width: 100%;
-        box-sizing: border-box;
-        border-radius: 8px;
-        border: 1px solid transparent;
-        background: rgba(0, 0, 0, 0.2);
-        color: #fff;
-        transition: 0.25s;
-        appearance: none; /* removes default arrow to look cleaner */
-    }
-
-    /* Custom dropdown arrow for Select */
-    select {
-        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300eaff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-        background-repeat: no-repeat;
-        background-position: right 10px top 50%;
-        background-size: 10px auto;
-        cursor: pointer;
-    }
-
-    select option {
-        background: #203a43; /* Dark background for dropdown options */
-        color: #fff;
-    }
-
-    input:focus, select:focus {
-        background-color: rgba(0, 0, 0, 0.4);
-        border-color: rgba(0, 234, 255, 0.5);
-        outline: none;
-    }
-
-    /* --- Main Action Button --- */
-    .btn-predict {
-        padding: 14px;
-        font-size: 17px;
+        padding: 15px;
+        margin-top: 20px;
+        background: linear-gradient(90deg, transparent, rgba(0, 242, 255, 0.2), transparent);
+        border: 1px solid var(--accent);
+        color: var(--accent);
         font-weight: bold;
-        width: 100%;
-        border: none;
-        margin-top: 25px;
-        background: var(--primary-grad);
-        color: #002b36;
-        border-radius: 10px;
+        text-transform: uppercase;
         cursor: pointer;
         transition: 0.3s;
-        box-shadow: 0 0 15px rgba(0,238,255,0.3);
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        font-size: 1rem;
+        letter-spacing: 3px;
+    }
+    .btn-main:hover {
+        background: var(--accent);
+        color: #000;
+        box-shadow: 0 0 30px var(--accent);
     }
 
-    .btn-predict:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 0 25px rgba(0,238,255,0.6);
-    }
-
-    /* --- Results --- */
-    #resultBox {
-        display: none;
-        margin-top: 22px;
-        padding: 20px;
-        border-radius: 12px;
-        font-size: 18px;
+    /* --- RESULT OVERLAY --- */
+    .result-display {
         text-align: center;
-        font-weight: bold;
-        animation: pop 0.3s ease;
-        border: 1px solid rgba(255,255,255,0.1);
+        margin-top: 20px;
+        padding: 20px;
+        border-radius: 10px;
+        display: none;
     }
+    .result-normal { border: 1px solid var(--success); background: rgba(0, 214, 100, 0.1); color: var(--success); }
+    .result-abnormal { border: 1px solid var(--danger); background: rgba(255, 75, 75, 0.1); color: var(--danger); }
 
-    @keyframes pop {
-        from { transform: scale(0.9); opacity: 0; }
-        to   { transform: scale(1); opacity: 1; }
+    /* --- LOADING SCANNER --- */
+    .scanner-line {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 2px;
+        background: var(--accent);
+        box-shadow: 0 0 10px var(--accent);
+        animation: scan 1.5s infinite linear;
+        display: none;
     }
+    @keyframes scan { 0%{top:0; opacity:0;} 50%{opacity:1;} 100%{top:100%; opacity:0;} }
 
-    .normal { background: rgba(6, 95, 43, 0.4); color: #80ffaa; border-color: #065f2b; }
-    .abnormal { background: rgba(139, 0, 0, 0.4); color: #ff8080; border-color: #8b0000; }
-    .inconclusive { background: rgba(122, 82, 0, 0.4); color: #ffcc66; border-color: #7a5200; }
-
-    /* --- Loading & Error --- */
-    #loading { display: none; text-align: center; margin-top: 15px; }
-    .spinner {
-        border: 3px solid rgba(255,255,255,0.1);
-        border-top: 3px solid #00eaff;
-        border-radius: 50%;
-        width: 30px; height: 30px;
-        animation: spin 0.8s linear infinite;
-        margin: auto;
-        margin-bottom: 10px;
-    }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-
-    .shake { animation: shake 0.4s ease; }
-    @keyframes shake {
-        0%,100% { transform: translateX(0); }
-        20%,60% { transform: translateX(-6px); }
-        40%,80% { transform: translateX(6px); }
-    }
 </style>
 </head>
-
 <body>
 
-<div class="container">
-    <h1>Healthcare Prediction</h1>
-    <div class="subtitle">V5 Categorical Encoder</div>
+<div class="dashboard">
+    
+    <div class="panel">
+        <h2>Patient Data Input</h2>
+        
+        <div style="margin-bottom: 15px; display:flex; gap:10px;">
+            <button onclick="fillPreset('healthy')" style="flex:1; padding:5px; background:none; border:1px solid #444; color:#aaa; cursor:pointer;">Load Healthy</button>
+            <button onclick="fillPreset('risk')" style="flex:1; padding:5px; background:none; border:1px solid #444; color:#aaa; cursor:pointer;">Load Risk</button>
+        </div>
 
-    <div class="preset-container">
-        <button class="preset-btn" onclick="fillPreset('healthy')">🍃 Test: Low Risk</button>
-        <button class="preset-btn" onclick="fillPreset('risk')">⚠️ Test: High Risk</button>
-        <button class="preset-btn" onclick="fillPreset('random')">🎲 Test: Random</button>
-        <button class="preset-btn" style="color:#ff6b6b" onclick="clearForm()">✕ Clear</button>
+        <div class="input-grid">
+            <div class="field"><label>Age</label><input type="number" id="Age" onchange="validateSmartLogic()"></div>
+            <div class="field"><label>Gender</label>
+                <select id="Gender"><option value="0">Female</option><option value="1">Male</option></select>
+            </div>
+            <div class="field"><label>Blood Type</label>
+                <select id="Blood_Type">
+                    <option value="0">A+</option><option value="1">A-</option><option value="2">AB+</option><option value="3">AB-</option>
+                    <option value="4">B+</option><option value="5">B-</option><option value="6">O+</option><option value="7">O-</option>
+                </select>
+            </div>
+            <div class="field"><label>Condition</label>
+                <select id="Medical_Condition" onchange="validateSmartLogic()">
+                    <option value="0">Arthritis</option><option value="1">Asthma</option><option value="2">Cancer</option>
+                    <option value="3">Diabetes</option><option value="4">Hypertension</option><option value="5">Obesity</option>
+                </select>
+            </div>
+            <div class="field"><label>Billing ($)</label><input type="number" id="Billing_Amount" onchange="validateSmartLogic()"></div>
+            <div class="field"><label>Admission</label>
+                <select id="Admission_Type"><option value="0">Elective</option><option value="1">Emergency</option><option value="2">Urgent</option></select>
+            </div>
+            <div class="field"><label>Medication</label>
+                <select id="Medication"><option value="0">Aspirin</option><option value="1">Ibuprofen</option><option value="2">Lipitor</option><option value="3">Paracetamol</option><option value="4">Penicillin</option></select>
+            </div>
+            <div class="field"><label>Severity (1-10)</label><input type="number" id="Symptom_Severity" max="10" onchange="validateSmartLogic()"></div>
+            <div class="field"><label>Prior Visits</label><input type="number" id="Prior_Hospital_Visits"></div>
+            <div class="field"><label>Risk Score</label><input type="number" id="Risk_Score" onchange="updateChart()"></div>
+            
+            <div class="field"><label>High BP</label><select id="High_BP_Flag"><option value="0">No</option><option value="1">Yes</option></select></div>
+            <div class="field"><label>High Sugar</label><select id="High_Sugar_Flag"><option value="0">No</option><option value="1">Yes</option></select></div>
+            <div class="field"><label>Fever</label><select id="Fever_Flag"><option value="0">No</option><option value="1">Yes</option></select></div>
+        </div>
+
+        <div id="smart-alerts"></div>
+
+        <button class="btn-main" onclick="processPrediction()">Initialize Analysis</button>
     </div>
 
-    <div class="grid">
-        <div class="input-group">
-            <label>Age</label>
-            <input type="number" id="Age" placeholder="Years">
+    <div class="panel">
+        <div class="scanner-line" id="scanner"></div>
+        <h2>Biometric Analysis</h2>
+        
+        <div class="chart-box">
+            <canvas id="riskChart"></canvas>
         </div>
 
-        <div class="input-group">
-            <label>Gender</label>
-            <select id="Gender">
-                <option value="0">Female</option>
-                <option value="1">Male</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>Blood Type</label>
-            <select id="Blood_Type">
-                <option value="0">A+</option>
-                <option value="1">A-</option>
-                <option value="2">AB+</option>
-                <option value="3">AB-</option>
-                <option value="4">B+</option>
-                <option value="5">B-</option>
-                <option value="6">O+</option>
-                <option value="7">O-</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>Condition</label>
-            <select id="Medical_Condition">
-                <option value="0">Arthritis</option>
-                <option value="1">Asthma</option>
-                <option value="2">Cancer</option>
-                <option value="3">Diabetes</option>
-                <option value="4">Hypertension</option>
-                <option value="5">Obesity</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>Billing ($)</label>
-            <input type="number" id="Billing_Amount" placeholder="Amount">
-        </div>
-
-        <div class="input-group">
-            <label>Admission</label>
-            <select id="Admission_Type">
-                <option value="0">Elective</option>
-                <option value="1">Emergency</option>
-                <option value="2">Urgent</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>Medication</label>
-            <select id="Medication">
-                <option value="0">Aspirin</option>
-                <option value="1">Ibuprofen</option>
-                <option value="2">Lipitor</option>
-                <option value="3">Paracetamol</option>
-                <option value="4">Penicillin</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>Severity (1-10)</label>
-            <input type="number" id="Symptom_Severity" placeholder="1 to 10" max="10" min="1">
-        </div>
-
-        <div class="input-group">
-            <label>Prior Visits</label>
-            <input type="number" id="Prior_Hospital_Visits" placeholder="Count">
-        </div>
-
-        <div class="input-group">
-            <label>High BP?</label>
-            <select id="High_BP_Flag">
-                <option value="0">No (Normal)</option>
-                <option value="1">Yes (High)</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>High Sugar?</label>
-            <select id="High_Sugar_Flag">
-                <option value="0">No (Normal)</option>
-                <option value="1">Yes (High)</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>Fever?</label>
-            <select id="Fever_Flag">
-                <option value="0">No</option>
-                <option value="1">Yes</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>Risk Score</label>
-            <input type="number" id="Risk_Score" placeholder="Metric">
+        <div id="resultBox" class="result-display">
+            <h1 id="resTitle" style="margin:0; font-size: 2.5rem;"></h1>
+            <p id="resDesc" style="opacity:0.8"></p>
         </div>
     </div>
 
-    <button class="btn-predict" onclick="predict()">🚀 Analyze Patient Data</button>
-
-    <div id="loading">
-        <div class="spinner"></div>
-        <small style="color:#aaa">Processing algorithm...</small>
-    </div>
-
-    <div id="resultBox"></div>
 </div>
 
 <script>
-const API = "https://ds-project-backend.onrender.com/predict";
+// --- 1. SETUP AUDIO SYSTEM (GAMIFICATION) ---
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-// 1. DATA PRESETS (Updated with correct encoded integers)
-const presets = {
-    healthy: {
-        Age: 25, Gender: 0, Blood_Type: 6, Medical_Condition: 0, Billing_Amount: 5000,
-        Admission_Type: 0, Medication: 3, Symptom_Severity: 1, Prior_Hospital_Visits: 0,
-        High_BP_Flag: 0, High_Sugar_Flag: 0, Fever_Flag: 0, Risk_Score: 10
-    },
-    risk: {
-        Age: 72, Gender: 1, Blood_Type: 2, Medical_Condition: 4, Billing_Amount: 45000,
-        Admission_Type: 1, Medication: 2, Symptom_Severity: 9, Prior_Hospital_Visits: 5,
-        High_BP_Flag: 1, High_Sugar_Flag: 1, Fever_Flag: 1, Risk_Score: 95
-    }
-};
+function playSound(type) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
 
-// 2. HELPER FUNCTIONS
-
-function fillPreset(type) {
-    let data = {};
+    const now = audioCtx.currentTime;
     
-    if (type === 'random') {
-        // Generate random integers valid for the specific dropdown ranges
-        data = {
-            Age: Math.floor(Math.random() * 80) + 18,
-            Gender: Math.round(Math.random()),          // 0-1
-            Blood_Type: Math.floor(Math.random() * 8),  // 0-7
-            Medical_Condition: Math.floor(Math.random() * 6), // 0-5
-            Billing_Amount: Math.floor(Math.random() * 50000),
-            Admission_Type: Math.floor(Math.random() * 3), // 0-2
-            Medication: Math.floor(Math.random() * 5),     // 0-4
-            Symptom_Severity: Math.floor(Math.random() * 10) + 1,
-            Prior_Hospital_Visits: Math.floor(Math.random() * 5),
-            High_BP_Flag: Math.round(Math.random()),
-            High_Sugar_Flag: Math.round(Math.random()),
-            Fever_Flag: Math.round(Math.random()),
-            Risk_Score: Math.floor(Math.random() * 100)
-        };
-    } else {
-        data = presets[type];
+    if (type === 'hover') {
+        osc.frequency.setValueAtTime(400, now);
+        gain.gain.setValueAtTime(0.05, now);
+        osc.start(now);
+        osc.stop(now + 0.05);
+    } else if (type === 'scan') {
+        osc.frequency.setValueAtTime(200, now);
+        osc.frequency.linearRampToValueAtTime(800, now + 0.5);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.5);
+        osc.start(now);
+        osc.stop(now + 0.5);
+    } else if (type === 'success') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(440, now);
+        osc.frequency.setValueAtTime(880, now + 0.2);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.6);
+        osc.start(now);
+        osc.stop(now + 0.6);
+    } else if (type === 'alert') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(100, now);
+        osc.frequency.linearRampToValueAtTime(80, now + 0.3);
+        gain.gain.setValueAtTime(0.2, now);
+        osc.start(now);
+        osc.stop(now + 0.3);
     }
-
-    // Fill inputs/selects (Browser matches the integer to the <option value="...">)
-    for (let key in data) {
-        const el = document.getElementById(key);
-        if(el) el.value = data[key];
-    }
-    
-    document.getElementById("resultBox").style.display = "none";
 }
 
-function clearForm() {
-    // Reset all inputs to empty string and selects to their first option
-    document.querySelectorAll('input').forEach(i => i.value = '');
-    document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-    document.getElementById("resultBox").style.display = "none";
+// Add hover sounds to inputs
+document.querySelectorAll('input, select, button').forEach(el => {
+    el.addEventListener('mouseenter', () => playSound('hover'));
+});
+
+// --- 2. CHART.JS VISUALIZATION ---
+let radarChart;
+
+function initChart() {
+    const ctx = document.getElementById('riskChart').getContext('2d');
+    radarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Age Risk', 'Billing Impact', 'Severity', 'Medical Risk', 'Visit Freq'],
+            datasets: [{
+                label: 'Patient Profile',
+                data: [50, 50, 50, 50, 50],
+                backgroundColor: 'rgba(0, 242, 255, 0.2)',
+                borderColor: '#00f2ff',
+                pointBackgroundColor: '#00f2ff',
+                borderWidth: 2
+            },
+            {
+                label: 'Healthy Baseline',
+                data: [30, 20, 10, 20, 10], // Static baseline
+                backgroundColor: 'rgba(0, 214, 100, 0.1)',
+                borderColor: '#00d664',
+                borderWidth: 1,
+                borderDash: [5, 5]
+            }]
+        },
+        options: {
+            scales: {
+                r: {
+                    angleLines: { color: 'rgba(255,255,255,0.1)' },
+                    grid: { color: 'rgba(255,255,255,0.1)' },
+                    pointLabels: { color: '#ccc', font: {size: 10} },
+                    suggestedMin: 0,
+                    suggestedMax: 100
+                }
+            },
+            plugins: { legend: { labels: { color: '#fff' } } }
+        }
+    });
 }
 
-// Initialize with Healthy preset on load
-window.onload = () => fillPreset('healthy');
+// Update chart dynamically based on inputs
+function updateChart() {
+    const age = document.getElementById('Age').value || 0;
+    const billing = document.getElementById('Billing_Amount').value || 0;
+    const severity = document.getElementById('Symptom_Severity').value || 0;
+    const risk = document.getElementById('Risk_Score').value || 0;
+    const visits = document.getElementById('Prior_Hospital_Visits').value || 0;
 
-// 3. PREDICTION LOGIC
+    // Normalize values to 0-100 scale for visual comparison
+    const d = [
+        Math.min((age / 90) * 100, 100),
+        Math.min((billing / 50000) * 100, 100),
+        Math.min(severity * 10, 100),
+        Math.min(risk, 100),
+        Math.min(visits * 10, 100)
+    ];
 
-async function predict() {
-    // Helper to get value. For <select>, .value returns the value attribute (e.g., "0")
-    const getVal = (id) => Number(document.getElementById(id).value);
+    radarChart.data.datasets[0].data = d;
+    radarChart.update();
+}
 
-    const payload = {
-        Age: getVal('Age'),
-        Gender: getVal('Gender'),
-        Blood_Type: getVal('Blood_Type'),
-        Medical_Condition: getVal('Medical_Condition'),
-        Billing_Amount: getVal('Billing_Amount'),
-        Admission_Type: getVal('Admission_Type'),
-        Medication: getVal('Medication'),
-        Symptom_Severity: getVal('Symptom_Severity'),
-        Prior_Hospital_Visits: getVal('Prior_Hospital_Visits'),
-        High_BP_Flag: getVal('High_BP_Flag'),
-        High_Sugar_Flag: getVal('High_Sugar_Flag'),
-        Fever_Flag: getVal('Fever_Flag'),
-        Risk_Score: getVal('Risk_Score')
+// --- 3. SMART VALIDATION LOGIC ---
+function validateSmartLogic() {
+    const age = parseInt(document.getElementById('Age').value);
+    const condition = parseInt(document.getElementById('Medical_Condition').value); // 0=Arthritis
+    const billing = parseInt(document.getElementById('Billing_Amount').value);
+    const severity = parseInt(document.getElementById('Symptom_Severity').value);
+    
+    const alertsDiv = document.getElementById('smart-alerts');
+    alertsDiv.innerHTML = ''; // Clear old alerts
+
+    const addAlert = (msg) => {
+        alertsDiv.innerHTML += `<div class="alert-tag">⚠️ ${msg}</div>`;
+        playSound('alert');
     };
 
-    // Validation
-    if(Object.values(payload).some(x => isNaN(x))) {
-        showError("Please enter valid numbers in text fields");
-        return;
+    // Logic Rule 1: Arthritis in young people
+    if (age < 25 && condition === 0) {
+        addAlert("Uncommon: Arthritis in patients under 25");
     }
 
-    const loading = document.getElementById("loading");
-    const resultBox = document.getElementById("resultBox");
+    // Logic Rule 2: High Billing for Low Severity
+    if (billing > 30000 && severity < 3) {
+        addAlert("Anomaly: High Billing for Low Severity");
+    }
 
-    loading.style.display = "block";
-    resultBox.style.display = "none";
+    // Logic Rule 3: Senior Risk
+    if (age > 75 && severity > 7) {
+        alertsDiv.innerHTML += `<div class="alert-tag" style="color:#ff4b4b; border-color:#ff4b4b">CRITICAL: Senior High Risk</div>`;
+    }
+
+    updateChart(); // Also update visualizer
+}
+
+// --- 4. PREDICTION HANDLING ---
+const API = "https://ds-project-backend.onrender.com/predict";
+
+async function processPrediction() {
+    playSound('scan');
+    document.getElementById('scanner').style.display = 'block';
+    document.getElementById('resultBox').style.display = 'none';
+
+    // Simulate "Processing" time for effect (800ms)
+    await new Promise(r => setTimeout(r, 800));
+
+    // Gather Data
+    const getVal = (id) => Number(document.getElementById(id).value);
+    const payload = {
+        Age: getVal('Age'), Gender: getVal('Gender'), Blood_Type: getVal('Blood_Type'),
+        Medical_Condition: getVal('Medical_Condition'), Billing_Amount: getVal('Billing_Amount'),
+        Admission_Type: getVal('Admission_Type'), Medication: getVal('Medication'),
+        Symptom_Severity: getVal('Symptom_Severity'), Prior_Hospital_Visits: getVal('Prior_Hospital_Visits'),
+        High_BP_Flag: getVal('High_BP_Flag'), High_Sugar_Flag: getVal('High_Sugar_Flag'),
+        Fever_Flag: getVal('Fever_Flag'), Risk_Score: getVal('Risk_Score')
+    };
 
     try {
         let res = await fetch(API, {
@@ -435,48 +392,57 @@ async function predict() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
-
         let data = await res.json();
-        loading.style.display = "none";
-
-        if (!res.ok) { return showError(data.detail || "Server Error"); }
-
-        showResult(data.prediction_label);
+        
+        displayFinalResult(data.prediction_label);
 
     } catch (err) {
-        loading.style.display = "none";
-        console.error(err);
-        showError("Backend is offline or unreachable");
+        document.getElementById('scanner').style.display = 'none';
+        alert("Backend Offline. Check Console.");
     }
 }
 
-function showResult(label) {
-    let box = document.getElementById("resultBox");
-    box.style.display = "block";
-    box.className = ""; // reset classes
+function displayFinalResult(label) {
+    document.getElementById('scanner').style.display = 'none';
+    const box = document.getElementById('resultBox');
+    const title = document.getElementById('resTitle');
+    const desc = document.getElementById('resDesc');
     
-    label = (label || "").toLowerCase();
+    box.style.display = 'block';
+    box.className = 'result-display'; // reset
 
-    if (label.includes("abnormal")) {
-        box.classList.add("abnormal");
-        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>ABNORMAL </h2>";
-    } 
-    else if (label.includes("normal")) {
-        box.classList.add("normal");
-        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>NORMAL </h2>";
-    } 
-    else {
-        box.classList.add("inconclusive");
-        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>INCONCLUSIVE ❓</h2>";
+    label = label.toLowerCase();
+
+    if (label.includes("normal")) {
+        playSound('success');
+        box.classList.add('result-normal');
+        title.innerText = "NORMAL";
+        desc.innerText = "No significant health anomalies detected based on provided biometrics.";
+        // Trigger Confetti
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    } else {
+        playSound('alert');
+        box.classList.add('result-abnormal');
+        title.innerText = "ABNORMAL DETECTED";
+        desc.innerText = "Biometrics deviate from standard healthy ranges. Further analysis recommended.";
     }
 }
 
-function showError(msg) {
-    let box = document.getElementById("resultBox");
-    box.style.display = "block";
-    box.className = "abnormal shake";
-    box.innerHTML = "⚠️ " + msg;
+// --- PRESETS ---
+function fillPreset(type) {
+    const data = type === 'healthy' 
+        ? { Age: 25, Gender: 0, Blood_Type: 6, Medical_Condition: 0, Billing_Amount: 5000, Admission_Type: 0, Medication: 3, Symptom_Severity: 1, Prior_Hospital_Visits: 0, High_BP_Flag: 0, High_Sugar_Flag: 0, Fever_Flag: 0, Risk_Score: 10 }
+        : { Age: 78, Gender: 1, Blood_Type: 2, Medical_Condition: 4, Billing_Amount: 48000, Admission_Type: 1, Medication: 2, Symptom_Severity: 9, Prior_Hospital_Visits: 6, High_BP_Flag: 1, High_Sugar_Flag: 1, Fever_Flag: 1, Risk_Score: 92 };
+
+    for (let key in data) {
+        document.getElementById(key).value = data[key];
+    }
+    validateSmartLogic(); // Trigger validation logic
+    updateChart();        // Trigger visual update
 }
+
+// Init
+window.onload = initChart;
 </script>
 
 </body>
