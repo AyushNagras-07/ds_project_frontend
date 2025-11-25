@@ -14,6 +14,7 @@
         --accent: #00f2ff;
         --danger: #ff4b4b;
         --success: #00d664;
+        --warning: #ffcc00;
     }
 
     body {
@@ -141,6 +142,7 @@
     }
     .result-normal { border: 1px solid var(--success); background: rgba(0, 214, 100, 0.1); color: var(--success); }
     .result-abnormal { border: 1px solid var(--danger); background: rgba(255, 75, 75, 0.1); color: var(--danger); }
+    .result-unknown { border: 1px solid var(--warning); background: rgba(255, 204, 0, 0.1); color: var(--warning); }
 
     /* --- LOADING SCANNER --- */
     .scanner-line {
@@ -165,6 +167,7 @@
         <div style="margin-bottom: 15px; display:flex; gap:10px;">
             <button onclick="fillPreset('healthy')" style="flex:1; padding:5px; background:none; border:1px solid #444; color:#aaa; cursor:pointer;">Load Healthy</button>
             <button onclick="fillPreset('risk')" style="flex:1; padding:5px; background:none; border:1px solid #444; color:#aaa; cursor:pointer;">Load Risk</button>
+            <button onclick="fillPreset('random')" style="flex:1; padding:5px; background:none; border:1px solid #444; color:#aaa; cursor:pointer;">Random</button>
         </div>
 
         <div class="input-grid">
@@ -402,6 +405,7 @@ async function processPrediction() {
     }
 }
 
+// --- CRITICAL FIX: LOGIC ORDER SWAPPED ---
 function displayFinalResult(label) {
     document.getElementById('scanner').style.display = 'none';
     const box = document.getElementById('resultBox');
@@ -409,33 +413,63 @@ function displayFinalResult(label) {
     const desc = document.getElementById('resDesc');
     
     box.style.display = 'block';
-    box.className = 'result-display'; // reset
+    box.className = 'result-display'; // reset classes
 
-    label = label.toLowerCase();
+    label = (label || "").toLowerCase();
 
-    if (label.includes("normal")) {
-        playSound('success');
-        box.classList.add('result-normal');
-        title.innerText = "NORMAL";
-        desc.innerText = "No significant health anomalies detected based on provided biometrics.";
-        // Trigger Confetti
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-    } else {
+    // 1. Check ABNORMAL FIRST to avoid "normal" substring overlap
+    if (label.includes("abnormal")) {
         playSound('alert');
         box.classList.add('result-abnormal');
         title.innerText = "ABNORMAL DETECTED";
         desc.innerText = "Biometrics deviate from standard healthy ranges. Further analysis recommended.";
+    } 
+    // 2. Then check Normal
+    else if (label.includes("normal")) {
+        playSound('success');
+        box.classList.add('result-normal');
+        title.innerText = "NORMAL";
+        desc.innerText = "No significant health anomalies detected based on provided biometrics.";
+        // Trigger Confetti only for Good News
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    }
+    // 3. Fallback
+    else {
+        box.classList.add('result-unknown');
+        title.innerText = "INCONCLUSIVE";
+        desc.innerText = "The model could not determine a clear result.";
     }
 }
 
 // --- PRESETS ---
 function fillPreset(type) {
-    const data = type === 'healthy' 
-        ? { Age: 25, Gender: 0, Blood_Type: 6, Medical_Condition: 0, Billing_Amount: 5000, Admission_Type: 0, Medication: 3, Symptom_Severity: 1, Prior_Hospital_Visits: 0, High_BP_Flag: 0, High_Sugar_Flag: 0, Fever_Flag: 0, Risk_Score: 10 }
-        : { Age: 78, Gender: 1, Blood_Type: 2, Medical_Condition: 4, Billing_Amount: 48000, Admission_Type: 1, Medication: 2, Symptom_Severity: 9, Prior_Hospital_Visits: 6, High_BP_Flag: 1, High_Sugar_Flag: 1, Fever_Flag: 1, Risk_Score: 92 };
+    let data = {};
+
+    if (type === 'random') {
+        data = {
+            Age: Math.floor(Math.random() * 80) + 18,
+            Gender: Math.round(Math.random()),
+            Blood_Type: Math.floor(Math.random() * 8),
+            Medical_Condition: Math.floor(Math.random() * 6),
+            Billing_Amount: Math.floor(Math.random() * 50000),
+            Admission_Type: Math.floor(Math.random() * 3),
+            Medication: Math.floor(Math.random() * 5),
+            Symptom_Severity: Math.floor(Math.random() * 10) + 1,
+            Prior_Hospital_Visits: Math.floor(Math.random() * 5),
+            High_BP_Flag: Math.round(Math.random()),
+            High_Sugar_Flag: Math.round(Math.random()),
+            Fever_Flag: Math.round(Math.random()),
+            Risk_Score: Math.floor(Math.random() * 100)
+        };
+    } else {
+        data = type === 'healthy' 
+            ? { Age: 25, Gender: 0, Blood_Type: 6, Medical_Condition: 0, Billing_Amount: 5000, Admission_Type: 0, Medication: 3, Symptom_Severity: 1, Prior_Hospital_Visits: 0, High_BP_Flag: 0, High_Sugar_Flag: 0, Fever_Flag: 0, Risk_Score: 10 }
+            : { Age: 78, Gender: 1, Blood_Type: 2, Medical_Condition: 4, Billing_Amount: 48000, Admission_Type: 1, Medication: 2, Symptom_Severity: 9, Prior_Hospital_Visits: 6, High_BP_Flag: 1, High_Sugar_Flag: 1, Fever_Flag: 1, Risk_Score: 92 };
+    }
 
     for (let key in data) {
-        document.getElementById(key).value = data[key];
+        const el = document.getElementById(key);
+        if(el) el.value = data[key];
     }
     validateSmartLogic(); // Trigger validation logic
     updateChart();        // Trigger visual update
