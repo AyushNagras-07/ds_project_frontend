@@ -125,24 +125,22 @@
 const API = "https://ds-project-backend.onrender.com/predict";
 
 async function predict() {
-    document.getElementById("loading").style.display = "block";
-    document.getElementById("resultBox").style.display = "none";
+  const payload = {
+    Age: parseFloat(document.getElementById('Age').value),
+    Gender: parseInt(document.getElementById('Gender').value),
+    Blood_Type: parseInt(document.getElementById('Blood_Type').value),
+    Medical_Condition: parseInt(document.getElementById('Medical_Condition').value),
+    Billing_Amount: parseFloat(document.getElementById('Billing_Amount').value),
+    Admission_Type: parseInt(document.getElementById('Admission_Type').value),
+    Medication: parseInt(document.getElementById('Medication').value),
+    Symptom_Severity: parseFloat(document.getElementById('Symptom_Severity').value),
+    Prior_Hospital_Visits: parseInt(document.getElementById('Prior_Hospital_Visits').value),
+    High_BP_Flag: parseInt(document.getElementById('High_BP_Flag').value),
+    High_Sugar_Flag: parseInt(document.getElementById('High_Sugar_Flag').value),
+    Fever_Flag: parseInt(document.getElementById('Fever_Flag').value),
+    Risk_Score: parseFloat(document.getElementById('Risk_Score').value)
+  };
 
-    const payload = {
-        Age: Number(Age.value),
-        Gender: Number(Gender.value),
-        Blood_Type: Number(Blood_Type.value),
-        Medical_Condition: Number(Medical_Condition.value),
-        Billing_Amount: Number(Billing_Amount.value),
-        Admission_Type: Number(Admission_Type.value),
-        Medication: Number(Medication.value),
-        Symptom_Severity: Number(Symptom_Severity.value),
-        Prior_Hospital_Visits: Number(Prior_Hospital_Visits.value),
-        High_BP_Flag: Number(High_BP_Flag.value),
-        High_Sugar_Flag: Number(High_Sugar_Flag.value),
-        Fever_Flag: Number(Fever_Flag.value),
-        Risk_Score: Number(Risk_Score.value)
-    };
 
     try {
         let res = await fetch(API, {
