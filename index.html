@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Healthcare Prediction — V4 Ultra-X</title>
+<title>Healthcare Prediction — V5 Categorical</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
@@ -26,7 +26,7 @@
 
     .container {
         width: 100%;
-        max-width: 720px;
+        max-width: 750px;
         margin: 20px;
         padding: 30px;
         border-radius: 20px;
@@ -76,7 +76,7 @@
         transition: all 0.3s ease;
     }
 
-    .preset-btn:hover, .preset-btn.active {
+    .preset-btn:hover {
         background: rgba(255,255,255,0.15);
         color: #fff;
         border-color: #00eaff;
@@ -86,7 +86,7 @@
     /* --- Form Grid --- */
     .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
         gap: 15px;
     }
 
@@ -104,7 +104,8 @@
         font-weight: 600;
     }
 
-    input {
+    /* Styling for both Input and Select */
+    input, select {
         padding: 10px 12px;
         font-size: 14px;
         width: 100%;
@@ -114,10 +115,25 @@
         background: rgba(0, 0, 0, 0.2);
         color: #fff;
         transition: 0.25s;
+        appearance: none; /* removes default arrow to look cleaner */
     }
 
-    input:focus {
-        background: rgba(0, 0, 0, 0.4);
+    /* Custom dropdown arrow for Select */
+    select {
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300eaff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px top 50%;
+        background-size: 10px auto;
+        cursor: pointer;
+    }
+
+    select option {
+        background: #203a43; /* Dark background for dropdown options */
+        color: #fff;
+    }
+
+    input:focus, select:focus {
+        background-color: rgba(0, 0, 0, 0.4);
         border-color: rgba(0, 234, 255, 0.5);
         outline: none;
     }
@@ -193,7 +209,7 @@
 
 <div class="container">
     <h1>Healthcare Prediction</h1>
-    <div class="subtitle">V4 Ultra-X Diagnostics Model</div>
+    <div class="subtitle">V5 Categorical Encoder</div>
 
     <div class="preset-container">
         <button class="preset-btn" onclick="fillPreset('healthy')">🍃 Test: Low Risk</button>
@@ -203,19 +219,108 @@
     </div>
 
     <div class="grid">
-        <div class="input-group"><label>Age</label><input type="number" id="Age" placeholder="e.g. 45"></div>
-        <div class="input-group"><label>Gender (0/1)</label><input type="number" id="Gender" placeholder="0 or 1"></div>
-        <div class="input-group"><label>Blood Type</label><input type="number" id="Blood_Type" placeholder="Code 1-8"></div>
-        <div class="input-group"><label>Condition ID</label><input type="number" id="Medical_Condition" placeholder="Code"></div>
-        <div class="input-group"><label>Billing ($)</label><input type="number" id="Billing_Amount" placeholder="Amount"></div>
-        <div class="input-group"><label>Admit Type</label><input type="number" id="Admission_Type" placeholder="Code"></div>
-        <div class="input-group"><label>Medication</label><input type="number" id="Medication" placeholder="Code"></div>
-        <div class="input-group"><label>Severity (1-10)</label><input type="number" id="Symptom_Severity" placeholder="1 to 10"></div>
-        <div class="input-group"><label>Prior Visits</label><input type="number" id="Prior_Hospital_Visits" placeholder="Count"></div>
-        <div class="input-group"><label>High BP? (0/1)</label><input type="number" id="High_BP_Flag" placeholder="0 or 1"></div>
-        <div class="input-group"><label>High Sugar? (0/1)</label><input type="number" id="High_Sugar_Flag" placeholder="0 or 1"></div>
-        <div class="input-group"><label>Fever? (0/1)</label><input type="number" id="Fever_Flag" placeholder="0 or 1"></div>
-        <div class="input-group"><label>Risk Score</label><input type="number" id="Risk_Score" placeholder="Metric"></div>
+        <div class="input-group">
+            <label>Age</label>
+            <input type="number" id="Age" placeholder="Years">
+        </div>
+
+        <div class="input-group">
+            <label>Gender</label>
+            <select id="Gender">
+                <option value="0">Female</option>
+                <option value="1">Male</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Blood Type</label>
+            <select id="Blood_Type">
+                <option value="0">A+</option>
+                <option value="1">A-</option>
+                <option value="2">AB+</option>
+                <option value="3">AB-</option>
+                <option value="4">B+</option>
+                <option value="5">B-</option>
+                <option value="6">O+</option>
+                <option value="7">O-</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Condition</label>
+            <select id="Medical_Condition">
+                <option value="0">Arthritis</option>
+                <option value="1">Asthma</option>
+                <option value="2">Cancer</option>
+                <option value="3">Diabetes</option>
+                <option value="4">Hypertension</option>
+                <option value="5">Obesity</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Billing ($)</label>
+            <input type="number" id="Billing_Amount" placeholder="Amount">
+        </div>
+
+        <div class="input-group">
+            <label>Admission</label>
+            <select id="Admission_Type">
+                <option value="0">Elective</option>
+                <option value="1">Emergency</option>
+                <option value="2">Urgent</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Medication</label>
+            <select id="Medication">
+                <option value="0">Aspirin</option>
+                <option value="1">Ibuprofen</option>
+                <option value="2">Lipitor</option>
+                <option value="3">Paracetamol</option>
+                <option value="4">Penicillin</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Severity (1-10)</label>
+            <input type="number" id="Symptom_Severity" placeholder="1 to 10" max="10" min="1">
+        </div>
+
+        <div class="input-group">
+            <label>Prior Visits</label>
+            <input type="number" id="Prior_Hospital_Visits" placeholder="Count">
+        </div>
+
+        <div class="input-group">
+            <label>High BP?</label>
+            <select id="High_BP_Flag">
+                <option value="0">No (Normal)</option>
+                <option value="1">Yes (High)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>High Sugar?</label>
+            <select id="High_Sugar_Flag">
+                <option value="0">No (Normal)</option>
+                <option value="1">Yes (High)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Fever?</label>
+            <select id="Fever_Flag">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Risk Score</label>
+            <input type="number" id="Risk_Score" placeholder="Metric">
+        </div>
     </div>
 
     <button class="btn-predict" onclick="predict()">🚀 Analyze Patient Data</button>
@@ -231,36 +336,36 @@
 <script>
 const API = "https://ds-project-backend.onrender.com/predict";
 
-// --- 1. PRESET DATA CONFIGURATION ---
+// 1. DATA PRESETS (Updated with correct encoded integers)
 const presets = {
     healthy: {
-        Age: 25, Gender: 0, Blood_Type: 1, Medical_Condition: 0, Billing_Amount: 5000,
-        Admission_Type: 2, Medication: 3, Symptom_Severity: 1, Prior_Hospital_Visits: 0,
+        Age: 25, Gender: 0, Blood_Type: 6, Medical_Condition: 0, Billing_Amount: 5000,
+        Admission_Type: 0, Medication: 3, Symptom_Severity: 1, Prior_Hospital_Visits: 0,
         High_BP_Flag: 0, High_Sugar_Flag: 0, Fever_Flag: 0, Risk_Score: 10
     },
     risk: {
-        Age: 72, Gender: 1, Blood_Type: 3, Medical_Condition: 4, Billing_Amount: 45000,
-        Admission_Type: 1, Medication: 1, Symptom_Severity: 9, Prior_Hospital_Visits: 5,
+        Age: 72, Gender: 1, Blood_Type: 2, Medical_Condition: 4, Billing_Amount: 45000,
+        Admission_Type: 1, Medication: 2, Symptom_Severity: 9, Prior_Hospital_Visits: 5,
         High_BP_Flag: 1, High_Sugar_Flag: 1, Fever_Flag: 1, Risk_Score: 95
     }
 };
 
-// --- 2. HELPER FUNCTIONS ---
+// 2. HELPER FUNCTIONS
 
 function fillPreset(type) {
     let data = {};
     
     if (type === 'random') {
-        // Generate plausible random data
+        // Generate random integers valid for the specific dropdown ranges
         data = {
             Age: Math.floor(Math.random() * 80) + 18,
-            Gender: Math.round(Math.random()),
-            Blood_Type: Math.floor(Math.random() * 8),
-            Medical_Condition: Math.floor(Math.random() * 5),
+            Gender: Math.round(Math.random()),          // 0-1
+            Blood_Type: Math.floor(Math.random() * 8),  // 0-7
+            Medical_Condition: Math.floor(Math.random() * 6), // 0-5
             Billing_Amount: Math.floor(Math.random() * 50000),
-            Admission_Type: Math.floor(Math.random() * 3),
-            Medication: Math.floor(Math.random() * 5),
-            Symptom_Severity: Math.floor(Math.random() * 10),
+            Admission_Type: Math.floor(Math.random() * 3), // 0-2
+            Medication: Math.floor(Math.random() * 5),     // 0-4
+            Symptom_Severity: Math.floor(Math.random() * 10) + 1,
             Prior_Hospital_Visits: Math.floor(Math.random() * 5),
             High_BP_Flag: Math.round(Math.random()),
             High_Sugar_Flag: Math.round(Math.random()),
@@ -271,28 +376,29 @@ function fillPreset(type) {
         data = presets[type];
     }
 
-    // Fill inputs
+    // Fill inputs/selects (Browser matches the integer to the <option value="...">)
     for (let key in data) {
         const el = document.getElementById(key);
         if(el) el.value = data[key];
     }
     
-    // Clear result box on new fill
     document.getElementById("resultBox").style.display = "none";
 }
 
 function clearForm() {
-    const inputs = document.querySelectorAll('input');
-    inputs.forEach(input => input.value = '');
+    // Reset all inputs to empty string and selects to their first option
+    document.querySelectorAll('input').forEach(i => i.value = '');
+    document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
     document.getElementById("resultBox").style.display = "none";
 }
 
 // Initialize with Healthy preset on load
 window.onload = () => fillPreset('healthy');
 
-// --- 3. PREDICTION LOGIC ---
+// 3. PREDICTION LOGIC
 
 async function predict() {
+    // Helper to get value. For <select>, .value returns the value attribute (e.g., "0")
     const getVal = (id) => Number(document.getElementById(id).value);
 
     const payload = {
@@ -311,9 +417,9 @@ async function predict() {
         Risk_Score: getVal('Risk_Score')
     };
 
-    // Basic validation
+    // Validation
     if(Object.values(payload).some(x => isNaN(x))) {
-        showError("Please enter valid numbers");
+        showError("Please enter valid numbers in text fields");
         return;
     }
 
@@ -347,28 +453,23 @@ async function predict() {
 function showResult(label) {
     let box = document.getElementById("resultBox");
     box.style.display = "block";
-    box.className = "result";
+    box.className = ""; // reset classes
+    
+    label = (label || "").toLowerCase();
 
-    label = label.toLowerCase().trim();
-
-    if (label === "abnormal") {
+    if (label.includes("normal")) {
+        box.classList.add("normal");
+        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>NORMAL ✔️</h2>";
+    } 
+    else if (label.includes("abnormal")) {
         box.classList.add("abnormal");
         box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>ABNORMAL ❗</h2>";
-    }
-    else if (label === "inconclusive") {
+    } 
+    else {
         box.classList.add("inconclusive");
         box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>INCONCLUSIVE ❓</h2>";
     }
-    else if (label === "normal") {
-        box.classList.add("normal");
-        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>NORMAL ✔️</h2>";
-    }
-    else {
-        box.classList.add("inconclusive");
-        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>UNKNOWN ❔</h2>";
-    }
 }
-
 
 function showError(msg) {
     let box = document.getElementById("resultBox");
