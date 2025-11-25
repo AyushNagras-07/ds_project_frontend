@@ -355,13 +355,13 @@ function showResult(label) {
         box.classList.add("normal");
         box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>NORMAL ✔️</h2>";
     } 
-    else if (label.includes("abnormal")) {
-        box.classList.add("abnormal");
-        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>ABNORMAL ❗</h2>";
+    else if (label.includes("inconclusive")) {
+        box.classList.add("inconclusive");
+        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>inconclusive ❗</h2>";
     } 
     else {
-        box.classList.add("inconclusive");
-        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>INCONCLUSIVE ❓</h2>";
+        box.classList.add("abnormal");
+        box.innerHTML = "<span>Diagnosis:</span><br><h2 style='margin:5px 0'>abnormal ❓</h2>";
     }
 }
 
