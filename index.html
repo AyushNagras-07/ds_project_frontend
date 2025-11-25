@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Healthcare Prediction V3</title>
+<title>Healthcare Prediction V3 Ultra-Pro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
@@ -10,21 +10,32 @@
         margin: 0;
         padding: 0;
         font-family: "Poppins", sans-serif;
-        background: linear-gradient(135deg, #141e30, #243b55);
+        background: linear-gradient(135deg, #0F2027, #203A43, #2C5364);
         color: #fff;
     }
 
     .container {
-        max-width: 750px;
+        max-width: 780px;
         margin: 50px auto;
-        padding: 25px;
-        background: rgba(255,255,255,0.08);
-        border-radius: 15px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-        backdrop-filter: blur(12px);
+        padding: 30px;
+        background: rgba(255,255,255,0.12);
+        border-radius: 18px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        backdrop-filter: blur(20px);
+        animation: fadeIn 0.8s ease;
     }
 
-    h1 { text-align: center; margin-bottom: 15px; }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 30px;
+        margin-bottom: 20px;
+        text-shadow: 0 0 15px #00c6ff;
+    }
 
     .grid {
         display: grid;
@@ -33,163 +44,171 @@
     }
 
     input {
-        padding: 10px;
-        width: 100%;
-        border-radius: 8px;
+        padding: 12px;
+        border-radius: 10px;
         border: none;
+        width: 100%;
+        background: rgba(255,255,255,0.25);
+        color: #fff;
+        font-size: 15px;
         outline: none;
+        transition: 0.25s;
+    }
+
+    input:focus {
+        background: rgba(255,255,255,0.35);
+        transform: scale(1.05);
+        box-shadow: 0 0 12px #00eaff;
     }
 
     button {
-        padding: 12px;
-        font-size: 16px;
-        font-weight: bold;
+        padding: 15px;
+        font-size: 18px;
+        margin-top: 15px;
         width: 100%;
         border: none;
-        margin-top: 10px;
-        background: #00c6ff;
-        color: black;
-        border-radius: 8px;
+        border-radius: 12px;
+        background: linear-gradient(45deg, #00c6ff, #0072ff);
         cursor: pointer;
+        font-weight: bold;
+        color: #000;
         transition: 0.3s;
+        box-shadow: 0 0 18px rgba(0,200,255,0.5);
     }
-    button:hover { background: #0096c7; }
 
+    button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 25px rgba(0,200,255,0.8);
+    }
+
+    /* Result box */
     #resultBox {
         display: none;
-        margin-top: 20px;
-        padding: 15px;
-        border-radius: 10px;
-        font-size: 20px;
+        margin-top: 25px;
+        padding: 18px;
+        border-radius: 14px;
+        font-size: 22px;
         text-align: center;
-        font-weight: bold;
+        font-weight: 700;
+        animation: pop 0.3s ease;
     }
 
-    .normal { background: #d4ffe0; color:#065f2b; }
-    .abnormal { background:#ffd4d4; color:#8b0000; }
-    .inconclusive { background:#fff0c2; color:#7a5200; }
-
-    /* Loading animation */
-    #loading {
-        display: none;
-        text-align: center;
-        margin-top: 15px;
+    @keyframes pop {
+        from { transform: scale(0.6); opacity: 0; }
+        to   { transform: scale(1); opacity: 1; }
     }
+
+    .normal { background:#d4ffe0; color:#045d27; }
+    .abnormal { background:#ffd2d2; color:#8b0000; }
+    .inconclusive { background:#fff2c4; color:#7a5200; }
+
+    /* Loading spinner */
+    #loading { text-align:center; display:none; margin-top:20px; }
     .spinner {
-        border: 4px solid rgba(255,255,255,0.3);
-        border-top: 4px solid #00c6ff;
+        border: 5px solid rgba(255,255,255,0.3);
+        border-top: 5px solid #00c6ff;
+        height: 45px; width: 45px;
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
         animation: spin 0.8s linear infinite;
         margin: auto;
     }
-    @keyframes spin {
-        100% { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 
 <body>
 
 <div class="container">
+
     <h1>Healthcare Test Result Prediction</h1>
 
     <div class="grid">
-        <input id="Age" placeholder="Age" value="35">
-        <input id="Gender" placeholder="Gender (0/1)" value="1">
-        <input id="Blood_Type" placeholder="Blood Type" value="1">
-        <input id="Medical_Condition" placeholder="Medical Condition" value="0">
-        <input id="Billing_Amount" placeholder="Billing Amount" value="20000">
-        <input id="Admission_Type" placeholder="Admission Type" value="1">
-        <input id="Medication" placeholder="Medication" value="1">
-        <input id="Symptom_Severity" placeholder="Symptom Severity 0–10" value="4">
-        <input id="Prior_Hospital_Visits" placeholder="Prior Visits" value="1">
-        <input id="High_BP_Flag" placeholder="High BP Flag (0/1)" value="0">
-        <input id="High_Sugar_Flag" placeholder="High Sugar Flag (0/1)" value="0">
-        <input id="Fever_Flag" placeholder="Fever Flag (0/1)" value="0">
-        <input id="Risk_Score" placeholder="Risk Score" value="50">
+        <input id="Age" value="35" placeholder="Age">
+        <input id="Gender" value="1" placeholder="Gender (0/1)">
+        <input id="Blood_Type" value="1" placeholder="Blood Type">
+        <input id="Medical_Condition" value="0" placeholder="Medical Condition">
+        <input id="Billing_Amount" value="20000" placeholder="Billing Amount">
+        <input id="Admission_Type" value="1" placeholder="Admission Type">
+        <input id="Medication" value="1" placeholder="Medication">
+        <input id="Symptom_Severity" value="4" placeholder="Symptom Severity (0–10)">
+        <input id="Prior_Hospital_Visits" value="1" placeholder="Prior Hospital Visits">
+        <input id="High_BP_Flag" value="0" placeholder="High BP (0/1)">
+        <input id="High_Sugar_Flag" value="0" placeholder="High Sugar (0/1)">
+        <input id="Fever_Flag" value="0" placeholder="Fever (0/1)">
+        <input id="Risk_Score" value="50" placeholder="Risk Score">
     </div>
 
     <button onclick="predict()">🚀 Predict Result</button>
 
-    <div id="loading">
-        <div class="spinner"></div>
-        <p>Processing...</p>
-    </div>
+    <div id="loading"><div class="spinner"></div><p>Processing...</p></div>
 
     <div id="resultBox"></div>
+
 </div>
 
 <script>
 const API = "https://ds-project-backend.onrender.com/predict";
 
 async function predict() {
-  const payload = {
-    Age: parseFloat(document.getElementById('Age').value),
-    Gender: parseInt(document.getElementById('Gender').value),
-    Blood_Type: parseInt(document.getElementById('Blood_Type').value),
-    Medical_Condition: parseInt(document.getElementById('Medical_Condition').value),
-    Billing_Amount: parseFloat(document.getElementById('Billing_Amount').value),
-    Admission_Type: parseInt(document.getElementById('Admission_Type').value),
-    Medication: parseInt(document.getElementById('Medication').value),
-    Symptom_Severity: parseFloat(document.getElementById('Symptom_Severity').value),
-    Prior_Hospital_Visits: parseInt(document.getElementById('Prior_Hospital_Visits').value),
-    High_BP_Flag: parseInt(document.getElementById('High_BP_Flag').value),
-    High_Sugar_Flag: parseInt(document.getElementById('High_Sugar_Flag').value),
-    Fever_Flag: parseInt(document.getElementById('Fever_Flag').value),
-    Risk_Score: parseFloat(document.getElementById('Risk_Score').value)
-  };
+    const payload = {
+        Age: +Age.value,
+        Gender: +Gender.value,
+        Blood_Type: +Blood_Type.value,
+        Medical_Condition: +Medical_Condition.value,
+        Billing_Amount: +Billing_Amount.value,
+        Admission_Type: +Admission_Type.value,
+        Medication: +Medication.value,
+        Symptom_Severity: +Symptom_Severity.value,
+        Prior_Hospital_Visits: +Prior_Hospital_Visits.value,
+        High_BP_Flag: +High_BP_Flag.value,
+        High_Sugar_Flag: +High_Sugar_Flag.value,
+        Fever_Flag: +Fever_Flag.value,
+        Risk_Score: +Risk_Score.value
+    };
 
+    resultBox.style.display = "none";
+    loading.style.display = "block";
 
     try {
-        let res = await fetch(API, {
+        const res = await fetch(API, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
 
-        let data = await res.json();
-        document.getElementById("loading").style.display = "none";
+        const data = await res.json();
+        loading.style.display = "none";
 
-        if (!res.ok) {
-            showError(data.detail || "Unknown error");
-            return;
-        }
+        if (!res.ok) return showError(data.detail);
 
-        showResult(data.prediction_label);
+        showResult(data.prediction_encoded, data.prediction_label);
 
-    } catch (err) {
-        document.getElementById("loading").style.display = "none";
-        showError("❌ Network Error — Backend Offline");
+    } catch {
+        loading.style.display = "none";
+        showError("Backend Offline ❌");
     }
 }
 
-function showResult(label) {
-    let box = document.getElementById("resultBox");
-    box.style.display = "block";
-    box.className = "";
-    box.classList.add("result");
+function showResult(encoded, label) {
+    resultBox.style.display = "block";
+    resultBox.className = "";
 
-    label = label.toLowerCase();
-
-    if (label.includes("normal")) {
-        box.classList.add("normal");
-        box.innerHTML = "Prediction: NORMAL ✔️";
-    } else if (label.includes("abnormal")) {
-        box.classList.add("abnormal");
-        box.innerHTML = "Prediction: ABNORMAL ❗";
+    if (encoded === 2) {
+        resultBox.classList.add("normal");
+        resultBox.innerHTML = "Prediction: NORMAL ✔️";
+    } else if (encoded === 0) {
+        resultBox.classList.add("abnormal");
+        resultBox.innerHTML = "Prediction: ABNORMAL ❗";
     } else {
-        box.classList.add("inconclusive");
-        box.innerHTML = "Prediction: INCONCLUSIVE ❓";
+        resultBox.classList.add("inconclusive");
+        resultBox.innerHTML = "Prediction: INCONCLUSIVE ❓";
     }
 }
 
 function showError(msg) {
-    let box = document.getElementById("resultBox");
-    box.style.display = "block";
-    box.className = "result abnormal";
-    box.innerHTML = "Server Error ❌<br>" + msg;
+    resultBox.style.display = "block";
+    resultBox.className = "abnormal";
+    resultBox.innerHTML = "Server Error ❌<br>" + msg;
 }
 </script>
 
